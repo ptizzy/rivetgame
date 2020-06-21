@@ -111,7 +111,7 @@ def list_serial_ports():
 if __name__ == '__main__':
 
     # List the serial devices available
-    list_serial_ports()
+    print("list_serial_ports()", list_serial_ports())
 
     # Set up an Arduino
     str_port = 'COM3'
