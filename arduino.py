@@ -4,12 +4,7 @@ Tools for interfacing with Arduinos using Python
 
 """
 from __future__ import print_function
-from builtins import input
-import os
 import platform
-import time
-import datetime
-from collections import deque
 import serial
 import glob
 import struct
