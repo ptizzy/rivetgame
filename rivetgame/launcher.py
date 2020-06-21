@@ -6,7 +6,8 @@ Tools for interfacing with Arduinos using Python
 """
 
 import pygame
-from arduino import ArduinoInterface
+import platform
+from rivetgame.arduino import ArduinoInterface, list_serial_ports
 
 
 def main():
@@ -40,7 +41,15 @@ def main():
 
 if __name__ == '__main__':
 
+    controller_port = None
+    system_name = platform.system()
+    if system_name == "Windows":
+        controller_port = "COM3"
+    else:
+        # Assume Linux or something else
+        controller_port = '/dev/ttyS0'
+
     # Manage the connection to the arduino with the context manager
-    with ArduinoInterface("COM3", baudrate=115200) as arduino:
+    with ArduinoInterface(controller_port, baudrate=115200) as arduino:
         print("arduino.read_serial()", arduino.read_serial())
         main()
