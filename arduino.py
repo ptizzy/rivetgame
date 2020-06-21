@@ -15,33 +15,6 @@ import glob
 import struct
 
 
-class AnalogData:
-    """class that holds analog data for N samples"""
-
-    def __init__(self, max_len):
-        """Start with a deque object for each axis"""
-        self.axis_x = deque([0.0] * max_len)
-        self.axis_y1 = deque([0.0] * max_len)
-        self.axis_y2 = deque([0.0] * max_len)
-        self.max_len = max_len
-        self.start = time.time()
-
-    def add_to_buf(self, buf, val):
-        """Use a ring buffer to manage the chart data"""
-        if len(buf) < self.max_len:
-            buf.append(val)
-        else:
-            buf.pop()
-            buf.appendleft(val)
-
-    def add(self, data):
-        """Add time stamps to the data and add the data to the buffer"""
-        assert len(data) == 2
-        self.add_to_buf(self.axis_x, time.time() - self.start)
-        self.add_to_buf(self.axis_y1, data[0])
-        self.add_to_buf(self.axis_y2, data[1])
-
-
 class ArduinoInterface:
     """Dedicated controller for a single Arduino"""
 
@@ -52,9 +25,14 @@ class ArduinoInterface:
         self.hue = 127
         self.animation = 2
         self.interface = None
-        assert self.open() is True
-        self.analog_data = AnalogData(100)
-        self.analog_plot = AnalogPlot()
+        self.msg_dict = {}
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     def open(self):
         """Open a serial connection to an arduino-compatible device"""
@@ -85,29 +63,28 @@ class ArduinoInterface:
         self.interface.write(msg.encode())
         self.interface.write(struct.pack('>B', int(value)))
 
-    def read_serial(self, target_msg='d'):
+    def read_serial(self, target_msg=None):
         """Read a single line from the Arduino"""
         line = self.interface.readline()
         if line is not None:
             new_msg = chr(line[0])
-            msg_val = int(line[1:-2])
+            try:
+                msg_val = int(line[1:-2])
+            except ValueError:
+                return {}
             print(new_msg, msg_val)
-            if new_msg == target_msg:
-                # Return the message, value pair
-                return [new_msg, msg_val]
-            else:
-                return None
+            if target_msg is not None and new_msg != target_msg:
+                return {}
+            # Return the message, value pair. Update the dict.
+            self.msg_dict.update({new_msg: msg_val})
+            return {new_msg: msg_val}
 
-    def graph_analog(self, msg=None, new_data=None):
-        """Plot data from the Arduino using the analog_data and analog_plot objects"""
-        print('plotting data... ' + str(new_data))
-        if msg is None or new_data is None:
-            msg, new_data = self.read_serial()
-        if new_data is not None:
-            data = [int(new_data)]
-            self.analog_data.add(data)
-            self.analog_plot.update(self.analog_data)
-            # self.arduino.flush()
+    def read_serial_blocking(self, target_msg):
+        """Wait until the current message is received."""
+        current_msg = {}
+        while current_msg == {}:
+            current_msg = self.read_serial(target_msg)
+        return current_msg
 
 
 def list_serial_ports():
@@ -136,45 +113,14 @@ def list_serial_ports():
         return glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*')
 
 
-def arduino_logging_loop(target_arduino, do_graph=True, do_log=True, update_delay=0.25):
-    """Loop on an arduino connection and log data from it"""
-    logger = CsvLogger()
-    while True:
-        try:
-            # Get the serial message from the Arduino
-            line = target_arduino.read_serial()
-            if line is not None:
-                msg, new_data = line
-                data = [int(new_data)]
-                if do_log and new_data is not None:
-                    if len(data) >= 1:
-                        ns_data = data[0]
-                        logger.update(ns_data)
-                if do_graph and new_data is not None:
-                    target_arduino.graph_analog(data)
-            time.sleep(update_delay)
-        except KeyboardInterrupt:
-            # The user has stopped the loop. Clean up the connection
-            print('exiting')
-            break
-    # close serial
-    target_arduino.close()
-
-
 if __name__ == '__main__':
+
+    # List the serial devices available
+    list_serial_ports()
+
     # Set up an Arduino
-    str_port = 'COM9'
+    str_port = 'COM3'
     # str_port = '/dev/tty.usbserial-A7006Yqh'  # <--- How to do this in Linux (see list_serial_ports)
-    led_arduino = ArduinoInterface(port=str_port, baudrate=9600)  # Set up an Arduino
+    arduino = ArduinoInterface(port=str_port, baudrate=115200)  # Set up an Arduino
 
-    str_port = 'COM11'
-    ping_arduino = ArduinoInterface(port=str_port, baudrate=9600)
-
-    # Run in a loop and log values from the arduino
-    # arduino_logging_loop(ping_arduino, update_delay=0.1)
-
-    # Run in a loop and pass user-specified values to the Arduino
-    # arduino_control(led_arduino)
-
-    # Control one arduino with another
-    arduino_to_arduino(ping_arduino, led_arduino)
+    print(arduino.read_serial())

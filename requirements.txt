@@ -1,2 +1,2 @@
-pygame
-pyserial
+pygame==1.9.6
+pyserial==3.4
