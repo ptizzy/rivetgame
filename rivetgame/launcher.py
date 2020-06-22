@@ -6,9 +6,10 @@ Tools for interfacing with Arduinos using Python
 """
 
 import os
-import pygame
 import platform
-from rivetgame.arduino import ArduinoInterface, list_serial_ports
+import pygame
+from pygame.locals import *
+from rivetgame.arduino import ArduinoInterface
 
 
 def main():
@@ -58,10 +59,11 @@ def main():
     running = True
     while running:
 
-        # Did the user click the window close button?
+        # Did the user press escape?
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
 
         # Fill the background with white
         screen.fill((255, 255, 255))
