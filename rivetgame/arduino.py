@@ -105,17 +105,10 @@ def list_serial_ports():
         return glob.glob('/dev/tty*') + glob.glob('/dev/cu*')
     else:
         # Assume Linux or something else
-        return glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*')
+        return glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*') + glob.glob('/dev/ttyACM*')
 
 
 if __name__ == '__main__':
 
     # List the serial devices available
     print("list_serial_ports()", list_serial_ports())
-
-    # Set up an Arduino
-    str_port = 'COM3'
-    # str_port = '/dev/tty.usbserial-A7006Yqh'  # <--- How to do this in Linux (see list_serial_ports)
-    arduino = ArduinoInterface(port=str_port, baudrate=115200)  # Set up an Arduino
-
-    print(arduino.read_serial())
