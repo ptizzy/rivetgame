@@ -13,12 +13,12 @@ from rivetgame.arduino import ArduinoInterface, list_serial_ports
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF)
+    # screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF)
 
     # Set up the drawing window
     # screen = pygame.display.set_mode([500, 500])
 
-    "Ininitializes a new pygame screen using the framebuffer"
+    # "Ininitializes a new pygame screen using the framebuffer"
     # Based on "Python GUI in Linux frame buffer"
     # http://www.karoltomala.com/blog/?p=679
     disp_no = os.getenv("DISPLAY")
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         controller_port = "COM3"
     else:
         # Assume Linux or something else
-        controller_port = '/dev/ttyS0'
+        controller_port = '/dev/ttyACM0'
 
     # Manage the connection to the arduino with the context manager
     with ArduinoInterface(controller_port, baudrate=115200) as arduino:
