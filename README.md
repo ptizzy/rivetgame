@@ -8,11 +8,6 @@ The rivetgame folder contains python code to run the pygame UI on the Raspberry 
 
 The two communicate with each other over serial using a variant of the 2B protocol. All messages start with a 1 byte "message type" followed by an integer value, and then a newline.
 
-### Hand-off - How to finish this
-
-This project is pretty incomplete right now.
-
-
 ## Getting Started
 
 Install the RivetGameController on an Arduino with interfaces to plug in the sensors for the two rivet guns. The logic has more details on the pinout and wiring.
@@ -109,6 +104,22 @@ logic controls the current state and the transitions in between. The current sta
 * WINNER - After the game state times out, a winner is announced. automatically cycles bacK to DEMO after.
 
 The Arduino updates the Pi periodically about its current state so that the display content and styling can be updated.
+
+### Hand-off - How to finish this
+
+This project is pretty incomplete right now. Here are the remaining items in the project plan - 
+
+https://docs.google.com/spreadsheets/d/10jJP0Mo_fp21x9LUnqfsGcLK_7l7XipGr344dlfVG1M/edit?usp=sharing
+
+...and here is the Arduino shield so far - 
+
+https://docs.google.com/drawings/d/1r1aloJVEaKwpRsM2SaRryKhPymp5DA7izWD6QMBC2oE/edit?usp=sharing
+
+The rumble / trigger hasn't been wired up because I wasn't sure how to do that the way the gun is wired.
+There is just one 12v and one ground line for both. The trigger interrupts the ground of the motor.
+So the current may need to be sense on the 12v line. It's convoluted and the trigger should probably just be rewired.
+
+The guns aren't wired up but connectors are provided. I didn't want to add the connectors if the guns need to be rewired.
 
 
 ## Built With
