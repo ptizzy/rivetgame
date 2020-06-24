@@ -21,16 +21,25 @@ bool do_print_diagnostics = true;
 // Inputs
 const int training_btn = 2;  // Start training
 const int play_btn = 3;  // Start playing
+
 // Player A
 const int trigger_a = 4;  // trigger button
-const int motor_a = 5;  // Vibration motor to indicate rivet event
+const int motor_a = 5;    // Vibration motor to indicate rivet event
+const int photo_a = A0;   // Photodiode input pin
+uint8_t photothresh_a = 60; // Threshold value for photodiode reading
+uint8_t photoval_a = 0; // Parsed photodiode value
 Adafruit_BNO055 bno_a = Adafruit_BNO055(55, 0x28);
 float x_a, y_a, z_a = 0;
+
 // Player B
 const int trigger_b = 8;  // trigger button
-const int motor_b = 9;  // Vibration motor to indicate rivet event
+const int motor_b = 9;    // Vibration motor to indicate rivet event
+const int photo_b = A4;   // Photodiode input pin
+uint8_t photothresh_b = 60; // Threshold value for photodiode reading
+uint8_t photoval_b = 0; // Parsed photodiode value
 Adafruit_BNO055 bno_b = Adafruit_BNO055(55, 0x29);
 float x_b, y_b, z_b = 0;
+
 // Orientation windows
 uint8_t x_holster = 320;
 uint8_t y_holster = -20;
@@ -38,7 +47,6 @@ uint8_t z_holster = 60;
 uint8_t x_rivet = 170;
 uint8_t y_rivet = -30;
 uint8_t z_rivet = 15;
-
 
 // States
 #define DEMO       0
@@ -64,6 +72,8 @@ void setup() {
   pinMode(play_btn, INPUT);
   pinMode(trigger_a, INPUT);
   pinMode(trigger_b, INPUT);
+  pinMode(photo_a, INPUT);
+  pinMode(photo_b, INPUT);
 
   // initialize serial communications at 115200 bps for status updates
   Serial.begin(115200);
@@ -75,6 +85,8 @@ void setup() {
     serial_update("E", 0); // Error #0 - Gun A not connected
     while(1);
   }
+
+// TODO - uncomment this once the addresses on the IMUs are set and both can be found.
 //  if(!bno_b.begin())
 //  {
 //    serial_update("E", 1); // Error #1 - Gun B not connected
@@ -87,8 +99,13 @@ void setup() {
 }
 
 
-// === Main Loop ===
-
+/*
+ * 
+ * === Main Loop ===
+ * 
+ * Do diagnostic/cleanup steps that are common to all states and then drop into state-specific loops (next section)
+ * 
+*/
 
 void loop() {
   counter = (counter + 1) % 1000000;
@@ -96,6 +113,10 @@ void loop() {
   // Update the gun position data
   if (counter % 1000 == 0) {
     update_gun_positions();
+  }
+  // Update the photodiode state - TODO: move into LED animation logic.
+  if (counter % 1000 == 0) {
+    update_photodiodes();
   }
   // Animate the next frame of the current game mode.
   if (counter % 100 == 0) {
@@ -114,24 +135,26 @@ void loop() {
         break;
     }
   }
-  
-  // Update the RasPi on the current state.
+  // Update the RasPi over serial on the current state.
   if (counter % 1000 == 0 && do_print_diagnostics == false) {
     serial_update("S", state);
   }
-  // Or print plain text to a serial terminal
+  // OR print human-readable diagnostics over serial if specified.
   if (counter % 1000 == 0 && do_print_diagnostics == true) {
     print_diagnostics();
   }
-  
-  
   delayMicroseconds(10);
 
 }
 
 
-// === State Loops ===
-
+/*
+ * 
+ * === State Loops ===
+ * 
+ * Treat these like you normally would the main loop() function. But they'll only run in their active state.
+ * 
+*/
 
 void demo()
 {
@@ -162,8 +185,13 @@ void winner()
 }
 
 
-// === State Transitions ===
-
+/*
+ * 
+ * === State Transitions ===
+ * 
+ * Move to a new state and set/reset any necessary variables to get that state started.
+ * 
+*/
 
 void to_demo()
 {
@@ -197,15 +225,13 @@ void to_winner()
 }
 
 
-// === Helper Functions ===
-
-
-void serial_update(char* key, int val) {
-  // Standard update message to communicate with RasPi
-  // {key: value} pair defines updates of specific variables
-  Serial.print(key);
-  Serial.println(val);
-}
+/*
+ * 
+ * === IMU Functions ===
+ * 
+ * Parse the output from the gun positions and check that orientation is within different windows.
+ * 
+*/
 
 void update_gun_positions() {
   /* Get a new sensor event */
@@ -238,6 +264,46 @@ bool is_rivet(float x, float y, float z, float thresh=20) {
   }
 }
 
+
+/*
+ * 
+ * === Photodiode Functions ===
+ * 
+ * Parse the photodiode readings.
+ * 
+*/
+
+uint8_t get_photodiode_val(int diode_pin, int thresh=60) {
+  int temp_val = analogRead(diode_pin);
+  if (temp_val > thresh) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
+void update_photodiodes() {
+  photoval_a = get_photodiode_val(photo_a, photothresh_a);
+  photoval_b = get_photodiode_val(photo_b, photothresh_b);
+}
+
+
+/*
+ * 
+ * === Serial Functions ===
+ * 
+ * Communucate over Serial to the Pi.
+ * This implements no mechanism to get messages from the Pi because that shouldn't happen. 
+ * Control is cleaner if it is one-way, so the Pi is just a follower of the Arduino.
+ * 
+*/
+
+void serial_update(char* key, int val) {
+  // Standard update message to communicate with RasPi
+  // {key: value} pair defines updates of specific variables
+  Serial.print(key);
+  Serial.println(val);
+}
 
 void print_diagnostics() {
   Serial.print("x_a=");

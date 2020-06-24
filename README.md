@@ -8,6 +8,11 @@ The rivetgame folder contains python code to run the pygame UI on the Raspberry 
 
 The two communicate with each other over serial using a variant of the 2B protocol. All messages start with a 1 byte "message type" followed by an integer value, and then a newline.
 
+### Hand-off - How to finish this
+
+This project is pretty incomplete right now.
+
+
 ## Getting Started
 
 Install the RivetGameController on an Arduino with interfaces to plug in the sensors for the two rivet guns. The logic has more details on the pinout and wiring.
@@ -112,8 +117,4 @@ The Arduino updates the Pi periodically about its current state so that the disp
 * [pyserial](https://pythonhosted.org/pyserial/) - Interface to the arduino
 * [FastLED](http://fastled.io/) - High-speed LED controller
 * [Adafruit_BNO055](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/arduino-code) - Interface to 9-axis IMU to determine gun orientation.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 

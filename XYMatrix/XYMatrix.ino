@@ -2,8 +2,6 @@
 
 #define DATA_PIN  10
 #define CLK_PIN  11
-int sensorPin = A0;
-int sensorValue = 0;
 
 #define COLOR_ORDER GRB
 #define CHIPSET     APA102
@@ -170,7 +168,6 @@ void setup() {
   FastLED.addLeds<CHIPSET, DATA_PIN, CLK_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
   FastLED.setBrightness( BRIGHTNESS );
   Serial.begin(115200);
-  pinMode(sensorPin, INPUT); 
   delay(1000);
 }
 
@@ -186,10 +183,6 @@ void loop()
       FastLED.setBrightness(BRIGHTNESS);
     }
     FastLED.show();
-    if (ms % 100) {
-      sensorValue = analogRead(sensorPin);
-      Serial.println(sensorValue);
-    }
 }
 
 void DrawOneFrame( byte startHue8, int8_t yHueDelta8, int8_t xHueDelta8)
