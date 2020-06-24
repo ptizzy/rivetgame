@@ -107,11 +107,15 @@ The Arduino updates the Pi periodically about its current state so that the disp
 
 ### Hand-off - How to finish this
 
+#### Project Plan
+
 This project is pretty incomplete right now. Here are the remaining items in the project plan - 
 
 https://docs.google.com/spreadsheets/d/10jJP0Mo_fp21x9LUnqfsGcLK_7l7XipGr344dlfVG1M/edit?usp=sharing
 
-...and here is the Arduino shield so far - 
+#### Electronics
+
+Here is the Arduino shield so far - 
 
 https://docs.google.com/drawings/d/1r1aloJVEaKwpRsM2SaRryKhPymp5DA7izWD6QMBC2oE/edit?usp=sharing
 
@@ -120,6 +124,13 @@ There is just one 12v and one ground line for both. The trigger interrupts the g
 So the current may need to be sense on the 12v line. It's convoluted and the trigger should probably just be rewired.
 
 The guns aren't wired up but connectors are provided. I didn't want to add the connectors if the guns need to be rewired.
+
+#### Pygame
+
+The pygame interface is super basic because there is already a ton of reference code out there.
+
+Plus, without more information about game states, image assets, and transitions, building out pygame too much
+could result in confusing code that needs to be removed. Better to keep it simple.
 
 
 ## Built With
