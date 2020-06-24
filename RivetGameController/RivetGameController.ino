@@ -93,10 +93,6 @@ void setup() {
 void loop() {
   counter = (counter + 1) % 1000000;
   
-  // Update the RasPi on the current state.
-  if (counter % 1000 == 0) {
-    serial_update("S", state);
-  }
   // Update the gun position data
   if (counter % 1000 == 0) {
     update_gun_positions();
@@ -118,6 +114,17 @@ void loop() {
         break;
     }
   }
+  
+  // Update the RasPi on the current state.
+  if (counter % 1000 == 0 && do_print_diagnostics == false) {
+    serial_update("S", state);
+  }
+  // Or print plain text to a serial terminal
+  if (counter % 1000 == 0 && do_print_diagnostics == true) {
+    print_diagnostics();
+  }
+  
+  
   delayMicroseconds(10);
 
 }
@@ -229,4 +236,23 @@ bool is_rivet(float x, float y, float z, float thresh=20) {
   } else {
     return false;
   }
+}
+
+
+void print_diagnostics() {
+  Serial.print("x_a=");
+  Serial.print(x_a);
+  Serial.print(" y_a=");
+  Serial.print(y_a);
+  Serial.print(" z_a=");
+  Serial.print(z_a);
+  Serial.print(" x_b=");
+  Serial.print(x_b);
+  Serial.print(" y_b=");
+  Serial.print(y_b);
+  Serial.print(" z_b=");
+  Serial.print(z_b);
+//  Serial.print(" =");
+//  Serial.print();
+  Serial.println("");
 }
