@@ -85,6 +85,15 @@ class ArduinoInterface:
             current_msg = self.read_serial(target_msg)
         return current_msg
 
+    def get_state(self):
+        return self.msg_dict.get("S", 0)
+
+    def get_points(self, player_num=0):
+        if player_num == 0:
+            return self.msg_dict.get("P", 0)
+        elif player_num == 1:
+            return self.msg_dict.get("p", 0)
+
 
 def list_serial_ports():
     """
@@ -114,10 +123,6 @@ def list_serial_ports():
 
 def main():
     pygame.init()
-    # screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF)
-
-    # Set up the drawing window
-    # screen = pygame.display.set_mode([500, 500])
 
     # "Ininitializes a new pygame screen using the framebuffer"
     # Based on "Python GUI in Linux frame buffer"
@@ -152,24 +157,38 @@ def main():
     screen.fill((255, 255, 255))
     # Initialise font support
     pygame.font.init()
+
+    font = pygame.font.SysFont(None, 32)
     # Render the screen
     pygame.display.update()
 
     # Run until the user asks to quit
+    counter = 0
     running = True
     while running:
 
-        # Did the user press escape?
+        # Did the user press escape? If so, exit to the console
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
 
+        # Check for updated messages from the Arduino
+        if counter % 300 == 0:
+            arduino.read_serial()
+
         # Fill the background with white
         screen.fill((255, 255, 255))
 
         # Draw a solid blue circle in the center
-        pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+        pygame.draw.circle(screen, (0, 0, 255), (350, 350), 75)
+
+        img = font.render(f'Mode: {arduino.get_state()}', True, (0, 0, 0))
+        screen.blit(img, (20, 20))
+        img = font.render(f'Player 1 Points: {arduino.get_points(player_num=0)}', True, (0, 0, 0))
+        screen.blit(img, (20, 80))
+        img = font.render(f'Player 2 Points: {arduino.get_points(player_num=1)}', True, (0, 0, 0))
+        screen.blit(img, (20, 180))
 
         # Flip the display
         pygame.display.flip()
@@ -183,7 +202,7 @@ if __name__ == '__main__':
     controller_port = None
     system_name = platform.system()
     if system_name == "Windows":
-        controller_port = "COM3"
+        controller_port = "COM4"
     else:
         # Assume Linux or something else
         controller_port = '/dev/ttyACM0'

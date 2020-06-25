@@ -16,13 +16,13 @@
 
 
 bool is_testing = false;
-bool do_print_diagnostics = true;
+bool do_print_diagnostics = false;
 
 // Inputs
 const int training_btn = 2;  // Start training
 const int play_btn = 3;  // Start playing
 
-// Player A
+// Player A Inputs
 const int trigger_a = 4;  // trigger button
 const int motor_a = 5;    // Vibration motor to indicate rivet event
 const int photo_a = A0;   // Photodiode input pin
@@ -30,8 +30,9 @@ uint8_t photothresh_a = 60; // Threshold value for photodiode reading
 uint8_t photoval_a = 0; // Parsed photodiode value
 Adafruit_BNO055 bno_a = Adafruit_BNO055(55, 0x28);
 float x_a, y_a, z_a = 0;
+int points_a = 0;
 
-// Player B
+// Player B Inputs
 const int trigger_b = 8;  // trigger button
 const int motor_b = 9;    // Vibration motor to indicate rivet event
 const int photo_b = A4;   // Photodiode input pin
@@ -39,14 +40,15 @@ uint8_t photothresh_b = 60; // Threshold value for photodiode reading
 uint8_t photoval_b = 0; // Parsed photodiode value
 Adafruit_BNO055 bno_b = Adafruit_BNO055(55, 0x29);
 float x_b, y_b, z_b = 0;
+int points_b = 0;
 
 // Orientation windows
-uint8_t x_holster = 320;
-uint8_t y_holster = -20;
-uint8_t z_holster = 60;
-uint8_t x_rivet = 170;
-uint8_t y_rivet = -30;
-uint8_t z_rivet = 15;
+int x_holster = 320;
+int y_holster = -20;
+int z_holster = 60;
+int x_rivet = 170;
+int y_rivet = -30;
+int z_rivet = 15;
 
 // States
 #define DEMO       0
@@ -83,7 +85,7 @@ void setup() {
   if(!bno_a.begin())
   {
     serial_update("E", 0); // Error #0 - Gun A not connected
-    while(1);
+//    while(1); // TODO - Uncomment to prevent the game from advancing after error
   }
 
 // TODO - uncomment this once the addresses on the IMUs are set and both can be found.
@@ -136,8 +138,14 @@ void loop() {
     }
   }
   // Update the RasPi over serial on the current state.
-  if (counter % 1000 == 0 && do_print_diagnostics == false) {
+  if (counter % 100 == 0 && do_print_diagnostics == false) {
     serial_update("S", state);
+  }
+  if (counter % 100 == 20 && do_print_diagnostics == false) {
+    serial_update("P", points_a);
+  }
+  if (counter % 100 == 40 && do_print_diagnostics == false) {
+    serial_update("p", points_b);
   }
   // OR print human-readable diagnostics over serial if specified.
   if (counter % 1000 == 0 && do_print_diagnostics == true) {
@@ -175,7 +183,9 @@ void training()
 
 void game()
 {
-  // game loop
+  // game loop (domo code just increments points)
+  points_a += 1;
+  points_b += 2;
 }
 
 
@@ -211,6 +221,8 @@ void to_game()
 {
   // start game loop
   state = GAME;
+  points_a = 0;
+  points_b = 0;
 }
 
 
