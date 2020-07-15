@@ -3,7 +3,7 @@ from launcher import main
 
 if __name__ == '__main__':
     main(BaseArduinoInterface({
-        "S": 2,
+        "S": 0,
         "P": 20,
         "p": 30,
         "M": 15,

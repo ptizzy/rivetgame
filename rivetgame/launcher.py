@@ -52,7 +52,6 @@ def main(arduino):
     # Initialise font support
     pygame.font.init()
 
-    font = pygame.font.SysFont(None, 32)
     # Render the screen
     pygame.display.update()
 
@@ -73,11 +72,11 @@ def main(arduino):
 
         mode = arduino.get_state()
         if mode == 0:
-            demo_screen(arduino, screen, font)
+            demo_screen(arduino, screen)
         if mode == 2:
-            training_complete_screen(arduino, screen, font)
+            training_complete_screen(arduino, screen)
         else:
-            game_screen(arduino, screen, font)
+            game_screen(arduino, screen)
 
         # Flip the display
         pygame.display.flip()
