@@ -82,8 +82,8 @@ int state = DEMO;
 
 // Counters
 unsigned long counter = 0;
-//unsigned long state_timer = 0;
-//unsigned long countdown = 0;
+unsigned long state_timer = 0;
+unsigned long last_time = 0;
 //unsigned long motor_a_countdown = 1000; // Limit how long the motor will vibrate the gun for a trigger pull (millis)
 //unsigned long motor_b_countdown = 1000; // Limit how long the motor will vibrate the gun for a trigger pull (millis)
 
@@ -255,6 +255,16 @@ void training()
 void game()
 {
   // game loop
+  int remaining_seconds = 45 - ((millis() - state_timer) / 1000);
+
+  if (remaining_seconds <= 0) {
+    to_winner();
+  }
+
+  if (last_time != remaining_seconds) {
+    serial_update("T", remaining_seconds);
+    last_time = remaining_seconds;
+  }
 }
 
 
@@ -484,8 +494,8 @@ void to_game()
 {
   // start game loop
   state = GAME;
-  points_a = 1.30;
-  points_b = 8.90;
+  points_a = 0;
+  points_b = 0;
   combo_a = 0;
   max_combo_a = 0;
   combo_b = 0;
@@ -493,7 +503,21 @@ void to_game()
   for (int i = 0; i < NUM_LEDS; i++) {
     led_states[i] = 0;
   }
+
+  // Winner loop animation timeout (milliseconds)
+  state_timer = millis();
+
   serial_update("S", state);
+  serial_update("R", rivets_a);
+  serial_update("r", rivets_b);
+  serial_update("P", points_a);
+  serial_update("p", points_b);
+  serial_update("C", combo_a);
+  serial_update("c", combo_b);
+  serial_update("M", max_combo_a);
+  serial_update("m", max_combo_b);
+
+  game();
 }
 
 
@@ -514,9 +538,6 @@ void to_high_score()
   state = HIGH_SCORE;
   serial_update("S", state);
 
-  //  // Winner loop animation timeout (milliseconds)
-  //  countdown = 10000;
-  //  state_timer = millis();
 }
 
 

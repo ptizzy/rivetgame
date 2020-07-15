@@ -124,6 +124,9 @@ class ArduinoInterface(BaseArduinoInterface):
             return {}
         print(new_msg, msg_val)
 
+        if new_msg == "E":
+            raise Exception("Error on arduino restarting")
+
         if target_msg is not None and new_msg != target_msg:
             return {}
 

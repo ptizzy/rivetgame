@@ -59,6 +59,10 @@ def game_screen(arduino, screen, time):
     text_w_drop( screen, 'Left Player', column_x, column_y, 60, (255,255,255), 5 )
     text_w_drop( screen, 'Rivets set:', column_x, column_y+100, 60, left_player_color, 5 )
     text_w_drop( screen, str(arduino.get_rivets(player_num=0)), column_x, column_y+190, 140, left_player_color, 10 )
+    text_w_drop(screen, 'Points set:', column_x, column_y + 200, 60, left_player_color, 5)
+    text_w_drop(screen, str(arduino.get_points(player_num=0)), column_x, column_y + 290, 140, left_player_color, 10)
+    text_w_drop(screen, 'Combo:', column_x, column_y + 300, 60, left_player_color, 5)
+    text_w_drop(screen, str(arduino.get_combo(player_num=0)), column_x, column_y + 390, 140, left_player_color, 10)
 
     # right player score display
 
@@ -70,6 +74,10 @@ def game_screen(arduino, screen, time):
     text_w_drop( screen, 'Right Player', column_x, column_y, 60, (255,255,255), 5 )
     text_w_drop( screen, 'Rivets set:', column_x, column_y+100, 60, right_player_color, 5 )
     text_w_drop( screen, str(arduino.get_rivets(player_num=1)), column_x, column_y+190, 140, right_player_color, 10 )
+    text_w_drop(screen, 'Points:', column_x, column_y + 200, 60, right_player_color, 5)
+    text_w_drop(screen, str(arduino.get_points(player_num=1)), column_x, column_y + 290, 140, right_player_color, 10)
+    text_w_drop(screen, 'Combo:', column_x, column_y + 300, 60, right_player_color, 5)
+    text_w_drop(screen, str(arduino.get_combo(player_num=1)), column_x, column_y + 390, 140, right_player_color, 10)
 
     # countdown
 
