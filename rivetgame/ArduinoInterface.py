@@ -17,6 +17,8 @@ class BaseArduinoInterface:
         elif player_num == 1:
             return self.msg_dict.get("p", 0)
 
+    def read_serial(self, target_msg=None):
+        pass
 
 class ArduinoInterface(BaseArduinoInterface):
     """Dedicated controller for a single Arduino"""
