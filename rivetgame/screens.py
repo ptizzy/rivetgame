@@ -1,3 +1,6 @@
+import pygame
+
+
 def demo_screen(arduino, screen, font):
     # Fill the background with white
     screen.fill((255, 255, 255))
