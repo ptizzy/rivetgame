@@ -80,6 +80,8 @@ def main(arduino):
         if mode == 1:
             training_screen(arduino, screen, t)
         if mode == 2:
+            training_complete_screen(arduino, screen, t)
+        if mode == 3:
             game_screen(arduino, screen, t)
 
         # Flip the display

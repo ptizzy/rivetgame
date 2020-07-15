@@ -13,7 +13,7 @@ def demo_screen(arduino, screen, time):
     screen.blit(gun_image, (screen.get_width()*0.25-gun_image.get_width()*0.5,screen.get_height()*0.4) )
     screen.blit(pygame.transform.flip(gun_image, 1, 0), (screen.get_width()*0.75-gun_image.get_width()*0.5,screen.get_height()*0.4) )
 
-def training_screen(arduino, screen):
+def training_screen(arduino, screen, time):
 
     draw_rivetrace_bkg(arduino, screen, "Instructions")
 
