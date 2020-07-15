@@ -6,17 +6,14 @@ Tools for interfacing with Arduinos using Python
 """
 
 import os
-import platform
 import time
 
-import serial
-import glob
-import struct
 import pygame
 from pygame.locals import *
 
 from ArduinoInterface import ArduinoInterface
 from screens import demo_screen, game_screen
+
 
 def main(arduino):
     pygame.init()
@@ -80,12 +77,12 @@ def main(arduino):
         else:
             game_screen(arduino, screen, font)
 
-
         # Flip the display
         pygame.display.flip()
 
     # Done! Time to quit.
     pygame.quit()
+
 
 def run(controller_port):
     try:
