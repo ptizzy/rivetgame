@@ -1,4 +1,5 @@
 import pygame
+import math
 
 from resource.fwa_named_colors import *
 
@@ -10,8 +11,9 @@ def demo_screen(arduino, screen, time):
     text_w_drop( screen, 'Pick up a rivet gun to play', screen.get_width()*0.5, 240, 60, (255,255,255), 5, 100 )
 
     gun_image=pygame.image.load("graphics/rivet_gun.png")
-    screen.blit(gun_image, (screen.get_width()*0.25-gun_image.get_width()*0.5,screen.get_height()*0.4) )
-    screen.blit(pygame.transform.flip(gun_image, 1, 0), (screen.get_width()*0.75-gun_image.get_width()*0.5,screen.get_height()*0.4) )
+    gun_image_rotated=pygame.transform.rotate(gun_image,math.sin(time)*50+45)
+    screen.blit(gun_image_rotated, (screen.get_width()*0.3-gun_image_rotated.get_width()*0.5+math.sin(time)*100-40,screen.get_height()*0.75-gun_image_rotated.get_height()*0.5+math.sin(time)*200) )
+    screen.blit(pygame.transform.flip(gun_image_rotated, 1, 0), (screen.get_width()*0.7-gun_image_rotated.get_width()*0.5-math.sin(time)*100,screen.get_height()*0.75-gun_image_rotated.get_height()*0.5+math.sin(time)*200) )
 
 def training_screen(arduino, screen, time):
 
@@ -33,12 +35,12 @@ def training_screen(arduino, screen, time):
     draw_box(screen, column_x, column_y+220, 400, 300 )
     draw_box(screen, screen.get_width()-column_x, column_y+220, 400, 300 )
 
-def draw_box(screen, x_center, y_center, x_width, y_width ):
+def training_complete_screen(arduino, screen, time):
 
-    pygame.draw.rect(screen, fwa_medium_blue, (x_center-x_width*0.5,y_center-y_width*0.5,x_width,y_width))
-    pygame.draw.rect(screen, fwa_2nd_teal_dk, (x_center-x_width*0.5,y_center-y_width*0.5,x_width,y_width), 5)
+    draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
 
-
+    text_w_drop( screen, 'Training Successful', screen.get_width()*0.5, screen.get_height()*0.45, 150, (255,255,255), 15 )
+    text_w_drop( screen, 'Pull Trigger to Continue', screen.get_width()*0.5, screen.get_height()*0.88, 80, fwa_grey, 7, math.sin(time*10)*100+100 )
 
 def game_screen(arduino, screen, time):
 
@@ -75,21 +77,33 @@ def game_screen(arduino, screen, time):
     text_w_drop( screen, 'Time Remaining', screen.get_width()*0.5, screen.get_height()*0.92, 50, (255,255,255), 5 )
 
 
-def training_complete_screen(arduino, screen, time):
-    # Fill the background with white
-    screen.fill((255, 5, 255))
-    font = pygame.font.Font("fonts/Helvetica35Thin_22435.ttf", 35)
+def game_complete_screen(arduino, screen, time):
 
-    # Draw a solid blue circle in the center
-    print(time)
-    pygame.draw.circle(screen, (0, 0, 200), (int((time * 100) % 300), 350), 75)
+    draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
 
-    img = font.render('Training Complete Mode: {}'.format(arduino.get_state()), True, (0, 0, 0))
-    screen.blit(img, (20, 20))
-    img = font.render('Player 1 Points: {}'.format(arduino.get_points(player_num=0)), True, (0, 0, 0))
-    screen.blit(img, (20, 80))
-    img = font.render('Player 2 Points: {}'.format(arduino.get_points(player_num=1)), True, (0, 0, 0))
-    screen.blit(img, (20, 180))
+    column_x=screen.get_width()*0.22
+    column_y=screen.get_height()*0.35
+
+    pygame.draw.rect(screen, fwa_2nd_teal_dk, (0-ease(time)*800,column_y-20,screen.get_width()*0.35,360), 5)
+    pygame.draw.rect(screen, fwa_medium_blue, (0-ease(time)*800,column_y-20,screen.get_width()*0.35,360))
+
+    text_w_drop( screen, 'Left Player', column_x+ease(time)*150, column_y-ease(time)*60, 60+int(ease(time)*40), (255,255,255), 5 )
+    text_w_drop( screen, 'Rivets set:', column_x+ease(time)*150, column_y+100, 60+int(ease(time)*40), left_player_color, 5 )
+    text_w_drop( screen, str(arduino.get_points(player_num=0)), column_x+ease(time)*150, column_y+190+ease(time)*100, 140+int(ease(time)*250), left_player_color, 10 )
+
+    # right player score display
+
+    column_x=screen.get_width()*0.78
+
+    pygame.draw.rect(screen, fwa_2nd_teal_dk, (screen.get_width()*0.65+ease(time)*800,column_y-20,screen.get_width()*0.35,360), 5)
+    pygame.draw.rect(screen, fwa_medium_blue, (screen.get_width()*0.65+ease(time)*800,column_y-20,screen.get_width()*0.35,360))
+
+    text_w_drop( screen, 'Right Player', column_x-ease(time)*150, column_y-ease(time)*60, 60+int(ease(time)*40), (255,255,255), 5 )
+    text_w_drop( screen, 'Rivets set:', column_x-ease(time)*150, column_y+100, 60+int(ease(time)*40), right_player_color, 5 )
+    text_w_drop( screen, str(arduino.get_points(player_num=1)), column_x-ease(time)*150, column_y+190+ease(time)*100, 140+int(ease(time)*250), right_player_color, 10 )
+
+def ease(time):
+    return 0.5-math.cos(min(3.14159,time))*0.5
 
 def draw_rivetrace_bkg(arduino, screen, time, screen_title):
 
@@ -119,3 +133,8 @@ def text_w_drop( screen, text_string, x, y, size, text_color, drop_dist, drop_op
     img = font.render(text_string, True, text_color)
     img.set_alpha(100)
     screen.blit(img, (x-img.get_width()*0.5, y))
+
+def draw_box(screen, x_center, y_center, x_width, y_width ):
+
+    pygame.draw.rect(screen, fwa_medium_blue, (x_center-x_width*0.5,y_center-y_width*0.5,x_width,y_width))
+    pygame.draw.rect(screen, fwa_2nd_teal_dk, (x_center-x_width*0.5,y_center-y_width*0.5,x_width,y_width), 5)
