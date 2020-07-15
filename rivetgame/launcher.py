@@ -7,6 +7,8 @@ Tools for interfacing with Arduinos using Python
 
 import os
 import platform
+import time
+
 import serial
 import glob
 import struct
@@ -35,19 +37,19 @@ class ArduinoInterface:
 
     def open(self):
         """Open a serial connection to an arduino-compatible device"""
-        try:
-            if self.interface is None or not isinstance(self.interface, serial.Serial):
-                self.interface = serial.Serial(self.port, self.baudrate)
-            print("initialising")
-            # Open the Serial Connection
-            if not self.interface.isOpen():
-                self.interface.open()
-            print("arduino connection open")
-            return True
-        except Exception as arduino_err:
-            print('arduino connection failed')
-            print(arduino_err)
-            return False
+        # try:
+        if self.interface is None or not isinstance(self.interface, serial.Serial):
+            self.interface = serial.Serial(self.port, self.baudrate)
+        print("initialising")
+        # Open the Serial Connection
+        if not self.interface.isOpen():
+            self.interface.open()
+        print("arduino connection open")
+        return True
+        # except Exception as arduino_err:
+        #     print('arduino connection failed')
+        #     print(arduino_err)
+        #     return False
 
     def close(self):
         """Close the connection to an arduino-compatible device"""
@@ -64,19 +66,31 @@ class ArduinoInterface:
 
     def read_serial(self, target_msg=None):
         """Read a single line from the Arduino"""
-        line = self.interface.readline()
+        # try:
+        line = self.interface.readline().strip()
+        print("LINE:", line)
         if line is not None:
-            new_msg = chr(line[0])
+            new_msg = line[0]
             try:
-                msg_val = int(line[1:-2])
+                new_msg = chr(new_msg)
+            except ValueError:
+                return {}
+
+            msg_val = line[1:]
+            try:
+                msg_val = int(msg_val)
             except ValueError:
                 return {}
             print(new_msg, msg_val)
+
             if target_msg is not None and new_msg != target_msg:
                 return {}
             # Return the message, value pair. Update the dict.
             self.msg_dict.update({new_msg: msg_val})
             return {new_msg: msg_val}
+        # except Exception as e:
+        #     print("Exception", e)
+        #     return {}
 
     def read_serial_blocking(self, target_msg):
         """Wait until the current message is received."""
@@ -121,7 +135,7 @@ def list_serial_ports():
         return glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyUSB*') + glob.glob('/dev/ttyACM*')
 
 
-def main():
+def main(arduino):
     pygame.init()
 
     # "Ininitializes a new pygame screen using the framebuffer"
@@ -175,7 +189,7 @@ def main():
 
         # Check for updated messages from the Arduino
         if counter % 300 == 0:
-            arduino.read_serial()
+            command = arduino.read_serial()
 
         # Fill the background with white
         screen.fill((255, 255, 255))
@@ -197,17 +211,26 @@ def main():
     pygame.quit()
 
 
+def run(controller_port):
+    try:
+        # Manage the connection to the arduino with the context manager
+        with ArduinoInterface(controller_port, baudrate=115200) as arduino:
+            print("arduino.read_serial()", arduino.read_serial())
+            main(arduino)
+    except Exception as e:
+        print("Exception", e)
+
+
 if __name__ == '__main__':
-
-    controller_port = None
-    system_name = platform.system()
-    if system_name == "Windows":
-        controller_port = "COM4"
-    else:
-        # Assume Linux or something else
-        controller_port = '/dev/ttyACM0'
-
-    # Manage the connection to the arduino with the context manager
-    with ArduinoInterface(controller_port, baudrate=115200) as arduino:
-        print("arduino.read_serial()", arduino.read_serial())
-        main()
+    while True:
+        run('COM1')
+        run('COM2')
+        run('COM3')
+        run('COM4')
+        run('COM5')
+        run('COM6')
+        run('/dev/ttyUSB0')
+        run('/dev/ttyUSB1')
+        run('/dev/ttyUSB2')
+        run('/dev/ttyUSB3')
+        time.sleep(5)
