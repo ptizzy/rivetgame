@@ -32,10 +32,11 @@ def game_screen(arduino, screen):
     img = font.render('Player 2 Points: {}'.format(arduino.get_points(player_num=1)), True, (0, 0, 0))
     screen.blit(img, (20, 180))
 
+
 def training_complete_screen(arduino, screen):
     # Fill the background with white
     screen.fill((255, 5, 255))
-    font = pygame.font.Font("fonts/Helvetica35Thin_22435.ttf", 4)
+    font = pygame.font.Font("fonts/Helvetica35Thin_22435.ttf", 35)
 
     # Draw a solid blue circle in the center
     pygame.draw.circle(screen, (0, 0, 255), (350, 350), 75)

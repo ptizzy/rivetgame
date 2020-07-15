@@ -1,5 +1,6 @@
 import struct
 
+import pygame
 import serial
 
 
@@ -7,6 +8,10 @@ class BaseArduinoInterface:
 
     def __init__(self, msg_dict):
         self.msg_dict = msg_dict
+        pygame.mixer.init()
+        self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
+        self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
+        self.player_sound_wrong = pygame.mixer.Sound("sounds/rivet2.wav")
 
     def get_state(self):
         return self.msg_dict.get("S", 0)
@@ -44,12 +49,12 @@ class ArduinoInterface(BaseArduinoInterface):
 
     def __init__(self, port='COM6', baudrate=9600):
         """Set up the specs for a serial connection"""
+        super().__init__({})
         self.port = port
         self.baudrate = baudrate
         self.hue = 127
         self.animation = 2
         self.interface = None
-        self.msg_dict = {}
 
     def __enter__(self):
         self.open()
@@ -91,26 +96,30 @@ class ArduinoInterface(BaseArduinoInterface):
         """Read a single line from the Arduino"""
         # try:
         line = self.interface.readline().strip()
-        print("LINE:", line)
-        if line is not None:
-            new_msg = line[0]
-            try:
-                new_msg = chr(new_msg)
-            except ValueError:
-                return {}
+        if line is None:
+            return
 
-            msg_val = line[1:]
-            try:
-                msg_val = int(msg_val)
-            except ValueError:
-                return {}
-            print(new_msg, msg_val)
+        new_msg = line[0]
+        try:
+            new_msg = chr(new_msg)
+        except ValueError:
+            return {}
 
-            if target_msg is not None and new_msg != target_msg:
-                return {}
-            # Return the message, value pair. Update the dict.
-            self.msg_dict.update({new_msg: msg_val})
-            return {new_msg: msg_val}
+        msg_val = line[1:]
+        try:
+            msg_val = int(msg_val)
+        except ValueError:
+            return {}
+        print(new_msg, msg_val)
+
+        if target_msg is not None and new_msg != target_msg:
+            return {}
+
+        self.play_sound(new_msg)
+
+        # Return the message, value pair. Update the dict.
+        self.msg_dict.update({new_msg: msg_val})
+        return {new_msg: msg_val}
         # except Exception as e:
         #     print("Exception", e)
         #     return {}
@@ -121,3 +130,11 @@ class ArduinoInterface(BaseArduinoInterface):
         while current_msg == {}:
             current_msg = self.read_serial(target_msg)
         return current_msg
+
+    def play_sound(self, command):
+        if command == "T":
+            pygame.mixer.Sound.play(self.player1_sound_correct)
+        elif command == "t":
+            pygame.mixer.Sound.play(self.player2_sound_correct)
+        elif command == "F" or command == "f":
+            pygame.mixer.Sound.play(self.player_sound_wrong)
