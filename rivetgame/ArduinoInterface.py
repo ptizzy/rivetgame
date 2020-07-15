@@ -17,8 +17,27 @@ class BaseArduinoInterface:
         elif player_num == 1:
             return self.msg_dict.get("p", 0)
 
+    def get_combo(self, player_num=0):
+        if player_num == 0:
+            return self.msg_dict.get("C", 0)
+        elif player_num == 1:
+            return self.msg_dict.get("c", 0)
+
+    def get_max_combo(self, player_num=0):
+        if player_num == 0:
+            return self.msg_dict.get("M", 0)
+        elif player_num == 1:
+            return self.msg_dict.get("m", 0)
+
+    def get_angle(self, player_num=0):
+        if player_num == 0:
+            return self.msg_dict.get("A", 0)
+        elif player_num == 1:
+            return self.msg_dict.get("a", 0)
+
     def read_serial(self, target_msg=None):
         pass
+
 
 class ArduinoInterface(BaseArduinoInterface):
     """Dedicated controller for a single Arduino"""
