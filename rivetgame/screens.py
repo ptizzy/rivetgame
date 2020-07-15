@@ -1,9 +1,11 @@
 import pygame
+
 from resource.fwa_named_colors import *
 
-def demo_screen(arduino, screen):
 
-    draw_rivetrace_bkg(arduino, screen, "Learn How")
+def demo_screen(arduino, screen, time):
+
+    draw_rivetrace_bkg(arduino, screen, time, "Learn How")
 
     text_w_drop( screen, 'Pick up a rivet gun to play', screen.get_width()*0.5, 240, 60, (255,255,255), 5, 100 )
 
@@ -12,9 +14,9 @@ def demo_screen(arduino, screen):
     screen.blit(pygame.transform.flip(gun_image, 1, 0), (screen.get_width()*0.75-gun_image.get_width()*0.5,screen.get_height()*0.4) )
 
 
-def game_screen(arduino, screen):
+def game_screen(arduino, screen, time):
 
-    draw_rivetrace_bkg(arduino, screen, "RIVET RACE!")
+    draw_rivetrace_bkg(arduino, screen, time, "RIVET RACE!")
 
     text_w_drop( screen, 'Set as many rivets as you can before time runs out!', screen.get_width()*0.5, 240, 50, (255,255,255), 5, 100 )
 
@@ -48,13 +50,14 @@ def game_screen(arduino, screen):
 
 
 
-def training_complete_screen(arduino, screen):
+def training_complete_screen(arduino, screen, time):
     # Fill the background with white
     screen.fill((255, 5, 255))
     font = pygame.font.Font("fonts/Helvetica35Thin_22435.ttf", 35)
 
     # Draw a solid blue circle in the center
-    pygame.draw.circle(screen, (0, 0, 255), (350, 350), 75)
+    print(time)
+    pygame.draw.circle(screen, (0, 0, 200), (int((time * 100) % 300), 350), 75)
 
     img = font.render('Training Complete Mode: {}'.format(arduino.get_state()), True, (0, 0, 0))
     screen.blit(img, (20, 20))
@@ -63,7 +66,7 @@ def training_complete_screen(arduino, screen):
     img = font.render('Player 2 Points: {}'.format(arduino.get_points(player_num=1)), True, (0, 0, 0))
     screen.blit(img, (20, 180))
 
-def draw_rivetrace_bkg(arduino, screen, screen_title):
+def draw_rivetrace_bkg(arduino, screen, time, screen_title):
 
     bkg_image=pygame.image.load("graphics/interface_bkg.png")
     screen.fill((0,0,0))

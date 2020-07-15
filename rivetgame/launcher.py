@@ -57,6 +57,7 @@ def main(arduino):
 
     # Run until the user asks to quit
     counter = 0
+    start_time = time.time()
     running = True
     while running:
 
@@ -71,13 +72,15 @@ def main(arduino):
             arduino.read_serial()
 
         mode = arduino.get_state()
-        
+
+        t = time.time() - start_time
+
         if mode == 0:
-            demo_screen(arduino, screen)
+            demo_screen(arduino, screen, t)
         if mode == 1:
-            game_screen(arduino, screen)
+            game_screen(arduino, screen, t)
         if mode == 2:
-            training_complete_screen(arduino, screen)
+            training_complete_screen(arduino, screen, t)
 
         # Flip the display
         pygame.display.flip()
