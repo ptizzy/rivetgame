@@ -58,7 +58,7 @@ def game_screen(arduino, screen, time):
 
     text_w_drop( screen, 'Left Player', column_x, column_y, 60, (255,255,255), 5 )
     text_w_drop( screen, 'Rivets set:', column_x, column_y+100, 60, left_player_color, 5 )
-    text_w_drop( screen, str(arduino.get_points(player_num=0)), column_x, column_y+190, 140, left_player_color, 10 )
+    text_w_drop( screen, str(arduino.get_rivets(player_num=0)), column_x, column_y+190, 140, left_player_color, 10 )
 
     # right player score display
 
@@ -69,11 +69,12 @@ def game_screen(arduino, screen, time):
 
     text_w_drop( screen, 'Right Player', column_x, column_y, 60, (255,255,255), 5 )
     text_w_drop( screen, 'Rivets set:', column_x, column_y+100, 60, right_player_color, 5 )
-    text_w_drop( screen, str(arduino.get_points(player_num=1)), column_x, column_y+190, 140, right_player_color, 10 )
+    text_w_drop( screen, str(arduino.get_rivets(player_num=1)), column_x, column_y+190, 140, right_player_color, 10 )
 
     # countdown
 
-    text_w_drop( screen, ':24', screen.get_width()*0.5, screen.get_height()*0.65, 300, (255,255,255), 15 )
+    remaining_seconds = arduino.get_remaining_time()
+    text_w_drop( screen, '{}:{}'.format(remaining_seconds//60, remaining_seconds%60), screen.get_width()*0.5, screen.get_height()*0.65, 300, (255,255,255), 15 )
     text_w_drop( screen, 'Time Remaining', screen.get_width()*0.5, screen.get_height()*0.92, 50, (255,255,255), 5 )
 
 

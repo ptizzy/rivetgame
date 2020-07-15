@@ -16,6 +16,12 @@ class BaseArduinoInterface:
     def get_state(self):
         return self.msg_dict.get("S", 0)
 
+    def get_rivets(self, player_num=0):
+        if player_num == 0:
+            return self.msg_dict.get("R", 0)
+        elif player_num == 1:
+            return self.msg_dict.get("r", 0)
+
     def get_points(self, player_num=0):
         if player_num == 0:
             return self.msg_dict.get("P", 0)
@@ -39,6 +45,9 @@ class BaseArduinoInterface:
             return self.msg_dict.get("A", 0)
         elif player_num == 1:
             return self.msg_dict.get("a", 0)
+
+    def get_remaining_time(self):
+        return self.msg_dict.get("T", 0)
 
     def read_serial(self, target_msg=None):
         pass
@@ -67,7 +76,7 @@ class ArduinoInterface(BaseArduinoInterface):
         """Open a serial connection to an arduino-compatible device"""
         # try:
         if self.interface is None or not isinstance(self.interface, serial.Serial):
-            self.interface = serial.Serial(self.port, self.baudrate)
+            self.interface = serial.Serial(self.port, self.baudrate, timeout=0)
         print("initialising")
         # Open the Serial Connection
         if not self.interface.isOpen():
@@ -96,7 +105,7 @@ class ArduinoInterface(BaseArduinoInterface):
         """Read a single line from the Arduino"""
         # try:
         line = self.interface.readline().strip()
-        if line is None:
+        if line is None or len(line) == 0:
             return
 
         new_msg = line[0]
@@ -107,7 +116,10 @@ class ArduinoInterface(BaseArduinoInterface):
 
         msg_val = line[1:]
         try:
-            msg_val = int(msg_val)
+            if "." in str(msg_val):
+                msg_val = float(msg_val)
+            else:
+                msg_val = int(msg_val)
         except ValueError:
             return {}
         print(new_msg, msg_val)
@@ -133,10 +145,11 @@ class ArduinoInterface(BaseArduinoInterface):
 
     def play_sound(self, command, value):
         # Successful
-        if command == "T":
-            if value == 1:
-                pygame.mixer.Sound.play(self.player1_sound_correct)
-            else:
-                pygame.mixer.Sound.play(self.player2_sound_correct)
-        elif command == "t":
+        if command != "V":
+            return
+        if value == 1:
+            pygame.mixer.Sound.play(self.player1_sound_correct)
+        elif value == 2:
+            pygame.mixer.Sound.play(self.player2_sound_correct)
+        elif value == 3:
             pygame.mixer.Sound.play(self.player_sound_wrong)

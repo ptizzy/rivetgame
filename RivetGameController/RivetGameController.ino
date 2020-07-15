@@ -43,6 +43,7 @@ const int photo_a_out = 12;   // Photodiode 5v pin
 uint8_t photothresh_a = 60; // Threshold value for photodiode reading
 Adafruit_BNO055 bno_a = Adafruit_BNO055(55, 0x28);
 float x_a, y_a, z_a = 0;
+int rivets_a = 0;
 double points_a = 0;
 int combo_a = 0;
 int max_combo_a = 0;
@@ -58,6 +59,7 @@ const int photo_b_out = 8;   // Photodiode 5v pin
 uint8_t photothresh_b = 60; // Threshold value for photodiode reading
 Adafruit_BNO055 bno_b = Adafruit_BNO055(55, 0x29);
 float x_b, y_b, z_b = 0;
+int rivets_b = 0;
 double points_b = 0;
 int combo_b = 0;
 int max_combo_b = 0;
@@ -72,8 +74,10 @@ float gyro_thresh = 10.0;
 // States
 #define DEMO       0
 #define TRAINING   1
-#define GAME       2
-#define WINNER     3
+#define TRAINING_COMPLETE   2
+#define GAME       3
+#define WINNER     4
+#define HIGH_SCORE     5
 int state = DEMO;
 
 // Counters
@@ -170,11 +174,15 @@ void loop() {
       case TRAINING:
         training();
         break;
+      case TRAINING_COMPLETE:
+        break;
       case GAME:
         game();
         break;
       case WINNER:
         winner();
+        break;
+      case HIGH_SCORE:
         break;
     }
   }
@@ -186,30 +194,6 @@ void loop() {
       print_diagnostics();
     }
   }
-  //  else {
-  //    // OR Update the RasPi over serial on the current state.
-  //    if (counter % 100 == 0) {
-  //      serial_update("S", state);
-  //    }
-  //    else if (counter % 100 == 10) {
-  //      serial_update("P", points_a);
-  //    }
-  //    else if (counter % 100 == 20) {
-  //      serial_update("p", points_b);
-  //    }
-  //    else if (counter % 100 == 30) {
-  //      serial_update("C", combo_a);
-  //    }
-  //    else if (counter % 100 == 40) {
-  //      serial_update("c", combo_b);
-  //    }
-  //    else if (counter % 100 == 50) {
-  //      serial_update("M", max_combo_a);
-  //    }
-  //    else if (counter % 100 == 60) {
-  //      serial_update("m", max_combo_b);
-  //    }
-  //  }
 
   delayMicroseconds(10);
 }
@@ -293,12 +277,18 @@ void on_trigger_a() {
       to_training();
       break;
     case TRAINING:
+      to_training_complete();
+      break;
+    case TRAINING_COMPLETE:
       to_game();
       break;
     case GAME:
       trigger_a_ready = true;
       break;
     case WINNER:
+      to_high_score();
+      break;
+    case HIGH_SCORE:
       to_demo();
       break;
   }
@@ -317,12 +307,18 @@ void on_trigger_b() {
       to_training();
       break;
     case TRAINING:
+      to_training_complete();
+      break;
+    case TRAINING_COMPLETE:
       to_game();
       break;
     case GAME:
       trigger_b_ready = true;
       break;
     case WINNER:
+      to_high_score();
+      break;
+    case HIGH_SCORE:
       to_demo();
       break;
   }
@@ -395,23 +391,27 @@ void fire_sucess(int led_index, int player) {
 
   // Update scores
   if (player == 1) {
-    points_a += 1;
+    rivets_a += 1;
+    points_a += 1.0 + (double(combo_a) / 10.0);
     combo_a += 1;
     max_combo_a = max(combo_a, max_combo_a);
   }
   else {
-    points_b += 1;
+    rivets_b += 1;
+    points_b += 1.0 + (double(combo_b) / 10.0);
     combo_b += 1;
     max_combo_b = max(combo_b, max_combo_b);
   }
 
   // Tell arduino about success for sound
-  serial_update("T", player);
+  serial_update("V", player);
 
   if (have_won()) {
     to_winner();
   }
 
+  serial_update("R", rivets_a);
+  serial_update("r", rivets_b);
   serial_update("P", points_a);
   serial_update("p", points_b);
   serial_update("C", combo_a);
@@ -422,7 +422,7 @@ void fire_sucess(int led_index, int player) {
 
 void fire_fail(int player) {
   // Tell arduino about failure for sound
-  serial_update("t", player);
+  serial_update("V", 3);
 
   // Update scores
   if (player == 1) {
@@ -432,6 +432,8 @@ void fire_fail(int player) {
     combo_b = 0;
   }
 
+  serial_update("R", rivets_a);
+  serial_update("r", rivets_b);
   serial_update("P", points_a);
   serial_update("p", points_b);
   serial_update("C", combo_a);
@@ -470,13 +472,20 @@ void to_training()
   serial_update("S", state);
 }
 
+void to_training_complete()
+{
+  // start training loop
+  state = TRAINING_COMPLETE;
+  serial_update("S", state);
+}
+
 
 void to_game()
 {
   // start game loop
   state = GAME;
-  points_a = 0;
-  points_b = 0;
+  points_a = 1.30;
+  points_b = 8.90;
   combo_a = 0;
   max_combo_a = 0;
   combo_b = 0;
@@ -492,6 +501,17 @@ void to_winner()
 {
   // start winner loop
   state = WINNER;
+  serial_update("S", state);
+
+  //  // Winner loop animation timeout (milliseconds)
+  //  countdown = 10000;
+  //  state_timer = millis();
+}
+
+void to_high_score()
+{
+  // start winner loop
+  state = HIGH_SCORE;
   serial_update("S", state);
 
   //  // Winner loop animation timeout (milliseconds)
@@ -602,7 +622,7 @@ byte read_led(int diode_pin) {
 void write_led_states() {
   for (int i = 0 ; i < NUM_LEDS ; i++) {
     if (led_states[i] == 1) {
-      leds[i] = CRGB(127, 0, 0);
+      leds[i] = CRGB(127, 127, 0);
     }
     else if (led_states[i] == 2) {
       leds[i] = CRGB(0, 127, 0);
@@ -623,6 +643,13 @@ void write_led_states() {
   Control is cleaner if it is one-way, so the Pi is just a follower of the Arduino.
 
 */
+
+void serial_update(char* key, double val) {
+  // Standard update message to communicate with RasPi
+  // {key: value} pair defines updates of specific variables
+  Serial.print(key);
+  Serial.println(val);
+}
 
 void serial_update(char* key, int val) {
   // Standard update message to communicate with RasPi
