@@ -17,8 +17,8 @@
 #include <FastLED.h>
 
 
-#define NUM_LEDS 64
-#define NUM_LEDS_PER_ROW 8
+#define NUM_LEDS_PER_ROW 18
+#define NUM_LEDS 144
 #define DATA_PIN 10
 #define CLOCK_PIN 11
 
@@ -209,13 +209,18 @@ void loop() {
 
 void demo()
 {
-  double phase = sin(counter / 1000);
-  double freq = sin(counter / 10000);
+  double phase = sin(double(counter) / 5000.0);
+  double freq = sin(double(counter) / 50000.0);
+  double amplitude = cos(double(counter) / 20000.0) / 2.0;
   // demo loop color wave
-  for (int LEDSerial = 0; LEDSerial < 64; LEDSerial++ ) {
+  for (int LEDSerial = 0; LEDSerial < NUM_LEDS; LEDSerial++ ) {
     int row = LEDSerial / NUM_LEDS_PER_ROW;
-    double col = (LEDSerial % NUM_LEDS_PER_ROW) / double(NUM_LEDS_PER_ROW);
-    double val_raw = ((row * freq) * 0.3) + phase;
+    double col = (LEDSerial % NUM_LEDS_PER_ROW);
+    if(row % 2 == 0) {
+      col = NUM_LEDS_PER_ROW  - col;
+    }
+    col = col  / double(NUM_LEDS_PER_ROW);
+    double val_raw = ((row * freq) * (amplitude + 0.3)) + phase;
     double val = val_raw - floor(val_raw);
     double diff = abs(val - col);
     if (diff < 0.05) {
