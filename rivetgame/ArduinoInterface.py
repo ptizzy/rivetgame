@@ -11,7 +11,7 @@ class BaseArduinoInterface:
         pygame.mixer.init()
         self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
         self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
-        self.player_sound_wrong = pygame.mixer.Sound("sounds/rivet2.wav")
+        self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
 
     def get_state(self):
         return self.msg_dict.get("S", 0)
@@ -115,7 +115,7 @@ class ArduinoInterface(BaseArduinoInterface):
         if target_msg is not None and new_msg != target_msg:
             return {}
 
-        self.play_sound(new_msg)
+        self.play_sound(new_msg, msg_val)
 
         # Return the message, value pair. Update the dict.
         self.msg_dict.update({new_msg: msg_val})
@@ -131,10 +131,12 @@ class ArduinoInterface(BaseArduinoInterface):
             current_msg = self.read_serial(target_msg)
         return current_msg
 
-    def play_sound(self, command):
+    def play_sound(self, command, value):
+        # Successful
         if command == "T":
-            pygame.mixer.Sound.play(self.player1_sound_correct)
+            if value == 1:
+                pygame.mixer.Sound.play(self.player1_sound_correct)
+            else:
+                pygame.mixer.Sound.play(self.player2_sound_correct)
         elif command == "t":
-            pygame.mixer.Sound.play(self.player2_sound_correct)
-        elif command == "F" or command == "f":
             pygame.mixer.Sound.play(self.player_sound_wrong)

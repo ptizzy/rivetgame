@@ -15,7 +15,7 @@ def demo_screen(arduino, screen, time):
 
 def training_screen(arduino, screen, time):
 
-    draw_rivetrace_bkg(arduino, screen, "Instructions")
+    draw_rivetrace_bkg(arduino, screen, time, "Instructions")
 
     column_y=screen.get_height()*0.2
 
