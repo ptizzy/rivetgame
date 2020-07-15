@@ -78,9 +78,9 @@ def main(arduino):
         if mode == 0:
             demo_screen(arduino, screen, t)
         if mode == 1:
-            game_screen(arduino, screen, t)
+            training_screen(arduino, screen, t)
         if mode == 2:
-            training_complete_screen(arduino, screen, t)
+            game_screen(arduino, screen, t)
 
         # Flip the display
         pygame.display.flip()
