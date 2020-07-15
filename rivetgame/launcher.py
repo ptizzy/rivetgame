@@ -12,7 +12,7 @@ import pygame
 from pygame.locals import *
 
 from ArduinoInterface import ArduinoInterface
-from screens import demo_screen, game_screen
+from screens import *
 
 
 def main(arduino):
@@ -74,6 +74,8 @@ def main(arduino):
         mode = arduino.get_state()
         if mode == 0:
             demo_screen(arduino, screen, font)
+        if mode == 2:
+            training_complete_screen(arduino, screen, font)
         else:
             game_screen(arduino, screen, font)
 
