@@ -138,7 +138,7 @@ def list_serial_ports():
 def main(arduino):
     pygame.init()
 
-    # "Ininitializes a new pygame screen using the framebuffer"
+    # "Initializes a new pygame screen using the framebuffer"
     # Based on "Python GUI in Linux frame buffer"
     # http://www.karoltomala.com/blog/?p=679
     disp_no = os.getenv("DISPLAY")
@@ -189,13 +189,19 @@ def main(arduino):
 
         # Check for updated messages from the Arduino
         if counter % 300 == 0:
-            command = arduino.read_serial()
+            arduino.read_serial()
 
         # Fill the background with white
         screen.fill((255, 255, 255))
 
         # Draw a solid blue circle in the center
         pygame.draw.circle(screen, (0, 0, 255), (350, 350), 75)
+
+        mode = arduino.get_state()
+        if mode == 0:
+            demo_screen(arduino, screen, font)
+        else:
+            game_screen(arduino, screen, font)
 
         img = font.render('Mode: {}'.format(arduino.get_state()), True, (0, 0, 0))
         screen.blit(img, (20, 20))
@@ -210,6 +216,23 @@ def main(arduino):
     # Done! Time to quit.
     pygame.quit()
 
+
+def demo_screen(arduino, screen, font):
+    img = font.render('DEMO Mode: {}'.format(arduino.get_state()), True, (0, 0, 0))
+    screen.blit(img, (20, 20))
+    img = font.render('Player 1 Points: {}'.format(arduino.get_points(player_num=0)), True, (0, 0, 0))
+    screen.blit(img, (20, 80))
+    img = font.render('Player 2 Points: {}'.format(arduino.get_points(player_num=1)), True, (0, 0, 0))
+    screen.blit(img, (20, 180))
+
+
+def game_screen(arduino, screen, font):
+    img = font.render('GAME Mode: {}'.format(arduino.get_state()), True, (0, 0, 0))
+    screen.blit(img, (20, 20))
+    img = font.render('Player 1 Points: {}'.format(arduino.get_points(player_num=0)), True, (0, 0, 0))
+    screen.blit(img, (20, 80))
+    img = font.render('Player 2 Points: {}'.format(arduino.get_points(player_num=1)), True, (0, 0, 0))
+    screen.blit(img, (20, 180))
 
 def run(controller_port):
     try:
