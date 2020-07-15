@@ -71,12 +71,13 @@ def main(arduino):
             arduino.read_serial()
 
         mode = arduino.get_state()
+        
         if mode == 0:
             demo_screen(arduino, screen)
+        if mode == 1:
+            game_screen(arduino, screen)
         if mode == 2:
             training_complete_screen(arduino, screen)
-        else:
-            game_screen(arduino, screen)
 
         # Flip the display
         pygame.display.flip()
