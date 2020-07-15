@@ -11,6 +11,32 @@ def demo_screen(arduino, screen):
     screen.blit(gun_image, (screen.get_width()*0.25-gun_image.get_width()*0.5,screen.get_height()*0.4) )
     screen.blit(pygame.transform.flip(gun_image, 1, 0), (screen.get_width()*0.75-gun_image.get_width()*0.5,screen.get_height()*0.4) )
 
+def training_screen(arduino, screen):
+
+    draw_rivetrace_bkg(arduino, screen, "Instructions")
+
+    column_y=screen.get_height()*0.2
+
+    text_w_drop( screen, 'Place the end of your gun over a red rivet hole', screen.get_width()*0.5, column_y, 50, (255,255,255), 5, 100 )
+
+    column_x=screen.get_width()*0.3
+
+    draw_box(screen, column_x, column_y+220, 400, 300 )
+    draw_box(screen, screen.get_width()-column_x, column_y+220, 400, 300 )
+
+    column_y=screen.get_height()*0.6
+
+    text_w_drop( screen, 'Orient the gun perpendicular to the metal sheet', screen.get_width()*0.5, column_y, 50, (255,255,255), 5, 100 )
+
+    draw_box(screen, column_x, column_y+220, 400, 300 )
+    draw_box(screen, screen.get_width()-column_x, column_y+220, 400, 300 )
+
+def draw_box(screen, x_center, y_center, x_width, y_width ):
+
+    pygame.draw.rect(screen, fwa_medium_blue, (x_center-x_width*0.5,y_center-y_width*0.5,x_width,y_width))
+    pygame.draw.rect(screen, fwa_2nd_teal_dk, (x_center-x_width*0.5,y_center-y_width*0.5,x_width,y_width), 5)
+
+
 
 def game_screen(arduino, screen):
 
@@ -47,30 +73,17 @@ def game_screen(arduino, screen):
     text_w_drop( screen, 'Time Remaining', screen.get_width()*0.5, screen.get_height()*0.92, 50, (255,255,255), 5 )
 
 
-def training_complete_screen(arduino, screen):
-    # Fill the background with white
-    screen.fill((255, 5, 255))
-    font = pygame.font.Font("fonts/Helvetica35Thin_22435.ttf", 4)
-
-    # Draw a solid blue circle in the center
-    pygame.draw.circle(screen, (0, 0, 255), (350, 350), 75)
-
-    img = font.render('Training Complete Mode: {}'.format(arduino.get_state()), True, (0, 0, 0))
-    screen.blit(img, (20, 20))
-    img = font.render('Player 1 Points: {}'.format(arduino.get_points(player_num=0)), True, (0, 0, 0))
-    screen.blit(img, (20, 80))
-    img = font.render('Player 2 Points: {}'.format(arduino.get_points(player_num=1)), True, (0, 0, 0))
-    screen.blit(img, (20, 180))
-
 def draw_rivetrace_bkg(arduino, screen, screen_title):
 
     bkg_image=pygame.image.load("graphics/interface_bkg.png")
     screen.fill((0,0,0))
     screen.blit(bkg_image,(0,0))
 
-    text_w_drop( screen, screen_title, screen.get_width()*0.5, 50, 160, (255,196,51), 10 )
+    text_w_drop( screen, screen_title, screen.get_width()*0.5, 50, 140, (255,196,51), 10 )
 
     text_w_drop( screen, str(arduino.get_state()), 20, 20, 20, (255,196,51), 2, 50 )  # print state for debugging
+
+    text_w_drop( screen, 'v1.0', 20, screen.get_height()-20, 20, (255,196,51), 2, 50 )  # print version number
 
 def text_w_drop( screen, text_string, x, y, size, text_color, drop_dist, drop_opacity=None ):
 
