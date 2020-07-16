@@ -4,13 +4,13 @@ import random
 
 from resource.fwa_named_colors import *
 
+gun_image = pygame.image.load("graphics/rivet_gun.png")
 
 def demo_screen(arduino, screen, time):
     draw_rivetrace_bkg(arduino, screen, time, "Learn How")
 
     text_w_drop(screen, 'Pick up a rivet gun to play', screen.get_width() * 0.5, 240, 60, (255, 255, 255), 5, 100)
 
-    gun_image = pygame.image.load("graphics/rivet_gun.png")
     gun_image_rotated = pygame.transform.rotate(gun_image, math.sin(time) * 50 + 45)
     screen.blit(gun_image_rotated, (
         screen.get_width() * 0.3 - gun_image_rotated.get_width() * 0.5 + math.sin(time) * 100 - 40,
@@ -68,7 +68,6 @@ def training_screen(arduino, screen, time):
     draw_box(screen, screen.get_width() - column_x, column_y + 220, 400, 300, background_color=color_1)
 
     angle_0 = 180 + arduino.get_angle(player_num=0)
-    gun_image = pygame.image.load("graphics/rivet_gun.png")
     gun_image_xform = pygame.transform.scale(gun_image, (200, 200))
     gun_image_xform = pygame.transform.rotate(gun_image_xform, angle_0)
     screen.blit(gun_image_xform,
