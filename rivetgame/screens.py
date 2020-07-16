@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 from resource.fwa_named_colors import *
 
@@ -24,7 +25,7 @@ def training_screen(arduino, screen, time):
 
     column_y = screen.get_height() * 0.2
 
-    text_w_drop(screen, 'Place the end of your gun over a red rivet hole', screen.get_width() * 0.5, column_y, 50,
+    text_w_drop(screen, 'Place the end of your gun over a red rivet hole to get the largest circle', screen.get_width() * 0.5, column_y, 40,
                 (255, 255, 255), 5, 100)
 
     column_x = screen.get_width() * 0.3
@@ -32,14 +33,31 @@ def training_screen(arduino, screen, time):
     draw_box(screen, column_x, column_y + 220, 400, 300)
     draw_box(screen, screen.get_width() - column_x, column_y + 220, 400, 300)
 
+    pygame.draw.circle(screen, (255,0,0), (int(column_x), int(column_y+220)), int(math.sin(time*2)*50+50) )
+    pygame.draw.circle(screen, (255,0,0), (int(screen.get_width() - column_x), int(column_y+220)), int(math.sin(time*3+1)*50+50) )
+
+    text_w_drop(screen, 'Left gun position', column_x, column_y + 330, 30, fwa_white, 5 )
+    text_w_drop(screen, 'Right gun position', screen.get_width() - column_x, column_y + 330, 30, fwa_white, 5 )
+
     column_y = screen.get_height() * 0.6
 
-    text_w_drop(screen, 'Orient the gun perpendicular to the metal sheet', screen.get_width() * 0.5, column_y, 50,
+    text_w_drop(screen, 'Orient the gun perpendicular to the metal sheet', screen.get_width() * 0.5, column_y, 40,
                 (255, 255, 255), 5, 100)
 
     draw_box(screen, column_x, column_y + 220, 400, 300)
     draw_box(screen, screen.get_width() - column_x, column_y + 220, 400, 300)
 
+    gun_image = pygame.image.load("graphics/rivet_gun.png")
+    gun_image_xform = pygame.transform.scale(gun_image, (200, 200) )
+    gun_image_xform = pygame.transform.rotate(gun_image_xform, math.sin(time) * 50 )
+    screen.blit(gun_image_xform, (column_x-gun_image_xform.get_width()*0.5,column_y+220-gun_image_xform.get_width()*0.5))
+
+    gun_image_xform = pygame.transform.scale(gun_image, (200, 200) )
+    gun_image_xform = pygame.transform.rotate(gun_image_xform, math.sin(time*1.5+1) * 50 )
+    screen.blit(gun_image_xform, (screen.get_width() - column_x - gun_image_xform.get_width()*0.5,column_y+220-gun_image_xform.get_width()*0.5))
+
+    text_w_drop(screen, 'Left gun orientation', column_x, column_y + 330, 30, fwa_white, 5 )
+    text_w_drop(screen, 'Right gun orientation', screen.get_width() - column_x, column_y + 330, 30, fwa_white, 5 )
 
 def training_complete_screen(arduino, screen, time):
     draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
@@ -138,6 +156,29 @@ def game_complete_screen(arduino, screen, time):
                 right_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=1)), column_x - ease(time) * 200, column_y + 290,
                 140 + int(ease(time) * 250), right_player_color, 10)
+
+def leaderboard(arduino, screen, time):
+
+    draw_rivetrace_bkg(arduino, screen, time, "Leaderboard")
+
+    top_score=[]
+
+    for x in range(10):
+        top_score.insert(0,int(random.random()*30))
+
+    top_score.sort(reverse=True)
+
+    start_y=screen.get_height()*0.3
+
+    text_w_drop(screen, 'Place', screen.get_width()*0.3, start_y-70, 50, fwa_2nd_teal_lt, 7)
+    text_w_drop(screen, 'Score', screen.get_width()*0.5, start_y-70, 50, fwa_2nd_teal_lt, 7)
+    text_w_drop(screen, 'Date', screen.get_width()*0.7, start_y-70, 50, fwa_2nd_teal_lt, 7)
+
+
+    for x in range(10):
+        text_w_drop(screen, str(x+1), screen.get_width()*0.3, start_y + x * 60, 50, fwa_grey, 5)
+        text_w_drop(screen, str(top_score[x]), screen.get_width() * 0.5, start_y + x * 60, 50, fwa_grey, 5)
+        text_w_drop(screen, '7/20/2020', screen.get_width() * 0.7, start_y + x * 60, 50, fwa_grey, 5)
 
 
 def ease(time):

@@ -85,6 +85,8 @@ def main(arduino):
             game_screen(arduino, screen, t)
         if mode == 4:
             game_complete_screen(arduino, screen, t)
+        if mode == 5:
+            leaderboard(arduino, screen, t)
 
         # Flip the display
         pygame.display.flip()
