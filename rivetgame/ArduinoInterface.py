@@ -1,4 +1,5 @@
 import struct
+import time
 
 import pygame
 import serial
@@ -12,6 +13,7 @@ class BaseArduinoInterface:
         self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
         self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
         self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
+        self.start_time = time.time()
 
     def get_state(self):
         return self.msg_dict.get("S", 0)
@@ -48,6 +50,9 @@ class BaseArduinoInterface:
 
     def get_remaining_time(self):
         return self.msg_dict.get("T", 0)
+
+    def get_start_time(self):
+        return self.start_time
 
     def read_serial(self, target_msg=None):
         pass
@@ -126,6 +131,8 @@ class ArduinoInterface(BaseArduinoInterface):
 
         if new_msg == "E":
             raise Exception("Error on arduino restarting")
+        if new_msg == "S":
+            self.start_time = time.time()
 
         if target_msg is not None and new_msg != target_msg:
             return {}

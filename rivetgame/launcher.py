@@ -57,7 +57,6 @@ def main(arduino):
 
     # Run until the user asks to quit
     counter = 0
-    start_time = time.time()
     running = True
     while running:
 
@@ -73,7 +72,7 @@ def main(arduino):
 
         mode = arduino.get_state()
 
-        t = time.time() - start_time
+        t = time.time() - arduino.get_start_time()
 
         if mode == 0:
             demo_screen(arduino, screen, t)
