@@ -435,11 +435,11 @@ void fire_sucess(int led_index, int player) {
   if (player == 1) {
     serial_update("C", combo_a);
     serial_update("P", points_a);
-    serial_update("M", rivet_attempts_a);
+    serial_update("R", rivets_a);
   } else {
     serial_update("p", points_b);
     serial_update("c", combo_b);
-    serial_update("m", rivet_attempts_b);
+    serial_update("r", rivets_b);
   }
 }
 
