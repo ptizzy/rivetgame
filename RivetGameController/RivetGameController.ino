@@ -200,11 +200,14 @@ void loop() {
 void demo()
 {
 
-  if (counter % 5000 == 0) {
-    serial_update("A", int(z_a + 180.0) % 360);
-    serial_update("a", int(z_b + 180.0) % 360);
+  if (counter % 1000 == 0) {
+//    serial_update("A", int(z_a + 180.0) % 360);
+//    serial_update("a", int(z_b + 180.0) % 360);
 
-    if ((z_a > 0 && z_a < 60) || (z_b > 0 && z_b < 60)) {
+    if (
+      (z_a > 0 && z_a < 60) || (z_b > 0 && z_b < 60) || 
+      (abs(z_a) > 180 && abs(z_a) < 240) || (abs(z_b) > 180 && abs(z_b) < 240)
+      ) {
       to_training();
     }
   }
@@ -608,13 +611,13 @@ void demo_lights() {
     double val = val_raw - floor(val_raw);
     double diff = min(min(abs(val - col), abs(val - col - 1)), abs(val - col + 1));
     if (diff < 0.1) {
-      leds[LEDSerial] = CRGB(0, 5, 150);
-    }
-    else if (diff < 0.15) {
-      leds[LEDSerial] = CRGB(0, 127, 200);
+      leds[LEDSerial] = CRGB(150, 5, 0);
     }
     else if (diff < 0.2) {
-      leds[LEDSerial] = CRGB(0, 127, 0);
+      leds[LEDSerial] = CRGB(180, 180, 180);
+    }
+    else if (diff < 0.3) {
+      leds[LEDSerial] = CRGB(150, 150, 0);
     }
     else {
       leds[LEDSerial] = CRGB(0, 0, 0);
