@@ -4,6 +4,8 @@ import random
 
 from resource.fwa_named_colors import *
 
+font_map = {}
+bkg_image = pygame.image.load("graphics/interface_bkg.png")
 gun_image = pygame.image.load("graphics/rivet_gun.png")
 
 def demo_screen(arduino, screen, time):
@@ -230,7 +232,6 @@ def ease(time):
 
 
 def draw_rivetrace_bkg(arduino, screen, time, screen_title):
-    bkg_image = pygame.image.load("graphics/interface_bkg.png")
     screen.fill((0, 0, 0))
     screen.blit(bkg_image, (0, 0))
 
@@ -242,7 +243,11 @@ def draw_rivetrace_bkg(arduino, screen, time, screen_title):
 
 
 def text_w_drop(screen, text_string, x, y, size, text_color, drop_dist, drop_opacity=None, justify=None):
-    font = pygame.font.Font("fonts/Politica XT Bold.ttf", size)
+    if size in font_map:
+        font = font_map[size]
+    else:
+        font = pygame.font.Font("fonts/Politica XT Bold.ttf", size)
+        font_map[size] = font
 
     if drop_opacity is None:
         drop_opacity = 140
