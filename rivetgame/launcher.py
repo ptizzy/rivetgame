@@ -8,7 +8,6 @@ Tools for interfacing with Arduinos using Python
 import os
 import time
 
-import pygame
 from pygame.locals import *
 
 from ArduinoInterface import ArduinoInterface
@@ -56,7 +55,6 @@ def main(arduino):
     pygame.display.update()
 
     # Run until the user asks to quit
-    counter = 0
     running = True
     while running:
 
