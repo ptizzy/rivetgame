@@ -135,7 +135,7 @@ class ArduinoInterface(BaseArduinoInterface):
         # try:
         line = self.interface.readline().strip()
         if line is None or len(line) == 0:
-            return
+            return {}
 
         new_msg = line[0]
         try:

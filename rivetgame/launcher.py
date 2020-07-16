@@ -68,7 +68,9 @@ def main(arduino):
 
         # Check for updated messages from the Arduino
         if counter % 300 == 0:
-            arduino.read_serial()
+            res = None
+            while res is None or len(res) != 0:
+                res = arduino.read_serial()
 
         mode = arduino.get_state()
 
