@@ -204,7 +204,7 @@ void demo()
     serial_update("A", int(z_a + 180.0) % 360);
     serial_update("a", int(z_b + 180.0) % 360);
 
-    if ((z_a > 0 && z_a < 20) || (z_b > 0 && z_b < 20)) {
+    if ((z_a > 0 && z_a < 60) || (z_b > 0 && z_b < 60)) {
       to_training();
     }
   }
@@ -629,7 +629,7 @@ void demo_lights_2() {
   for (int LEDSerial = 0; LEDSerial < NUM_LEDS; LEDSerial++ ) {
     int row = LEDSerial / NUM_LEDS_PER_ROW;
     double col = (LEDSerial % NUM_LEDS_PER_ROW);
-    int r = int(abs(155 * sin((double(counter) / 5000.0) + (row * sin((double(counter) / 50000.0)) / 50))));
+    int r = int(abs(255 * sin((double(counter) / 5000.0) + (row * sin((double(counter) / 50000.0)) / 50))));
     int g = int(abs(155 * cos((double(counter) / 17000.0) + (row * col * sin((double(counter) / 20000.0)) / 20))));
     int b = int(abs(155 * sin((double(counter) / 4000.0) + (col * sin((double(counter) / 10000.0)) / 10))));
     leds[LEDSerial] = CRGB(b, g, r);

@@ -1,9 +1,10 @@
+import os
 import struct
 import time
 
 import pygame
 import serial
-
+import pickle
 
 class BaseArduinoInterface:
 
@@ -14,6 +15,29 @@ class BaseArduinoInterface:
         self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
         self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
         self.start_time = time.time()
+        self.learderboard = list()
+        if os.path.exists("leaderboard.pkl"):
+            try:
+                with open("leaderboard.pkl", "rb") as f:
+                    self.learderboard = pickle.load(f)
+            except Exception as e:
+                print("Could not load leaderboard, it will be reset", e)
+
+
+    def add_score_to_leaderboard(self, score):
+        self.learderboard.append(score)
+        self.learderboard = list(set(self.learderboard))
+        self.learderboard.sort(reverse=True)
+        self.learderboard = self.learderboard[:10]
+        try:
+            with open("leaderboard.pkl", "wb") as f:
+                pickle.dump(self.learderboard, f)
+        except Exception as e:
+            print("Could not write leaderboard", e)
+
+
+    def get_leaderboard(self):
+        return self.learderboard
 
     def get_state(self):
         return self.msg_dict.get("S", 0)
@@ -133,6 +157,10 @@ class ArduinoInterface(BaseArduinoInterface):
             raise Exception("Error on arduino restarting")
         if new_msg == "S":
             self.start_time = time.time()
+            # As game finishes save high scores
+            if msg_val == 4:
+                self.add_score_to_leaderboard(self.get_points(player_num=0))
+                self.add_score_to_leaderboard(self.get_points(player_num=1))
 
         if target_msg is not None and new_msg != target_msg:
             return {}

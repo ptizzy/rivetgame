@@ -206,23 +206,24 @@ def game_complete_screen(arduino, screen, time):
 def leaderboard(arduino, screen, time):
     draw_rivetrace_bkg(arduino, screen, time, "Leaderboard")
 
-    top_score = []
-
-    for x in range(10):
-        top_score.insert(0, int(random.random() * 30))
-
-    top_score.sort(reverse=True)
+    top_score = arduino.get_leaderboard()
 
     start_y = screen.get_height() * 0.3
 
     text_w_drop(screen, 'Place', screen.get_width() * 0.3, start_y - 70, 50, fwa_2nd_teal_lt, 7)
     text_w_drop(screen, 'Score', screen.get_width() * 0.5, start_y - 70, 50, fwa_2nd_teal_lt, 7)
-    text_w_drop(screen, 'Date', screen.get_width() * 0.7, start_y - 70, 50, fwa_2nd_teal_lt, 7)
+    # text_w_drop(screen, 'Date', screen.get_width() * 0.7, start_y - 70, 50, fwa_2nd_teal_lt, 7)
 
-    for x in range(10):
-        text_w_drop(screen, str(x + 1), screen.get_width() * 0.3, start_y + x * 60, 50, fwa_grey, 5)
-        text_w_drop(screen, str(top_score[x]), screen.get_width() * 0.5, start_y + x * 60, 50, fwa_grey, 5)
-        text_w_drop(screen, '7/20/2020', screen.get_width() * 0.7, start_y + x * 60, 50, fwa_grey, 5)
+    player_0_score = arduino.get_points(player_num=0)
+    player_1_score = arduino.get_points(player_num=1)
+
+    for i, score in enumerate(top_score):
+        text_w_drop(screen, str(i + 1), screen.get_width() * 0.3, start_y + i * 60, 50, fwa_grey, 5)
+        text_w_drop(screen, str(score), screen.get_width() * 0.5, start_y + i * 60, 50, fwa_grey, 5)
+        if abs(score - player_0_score) < 0.01:
+            text_w_drop(screen, 'New High Score!', screen.get_width() * 0.7, start_y + i * 60, 50, left_player_color, 5)
+        if abs(score - player_1_score) < 0.01:
+            text_w_drop(screen, 'New High Score!', screen.get_width() * 0.7, start_y + i * 60, 50, right_player_color, 5)
 
 
 def ease(time):
