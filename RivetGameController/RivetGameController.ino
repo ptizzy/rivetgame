@@ -59,7 +59,6 @@ int rivet_attempts_b = 0;
 //int y_holster = -20;
 //int z_holster = 60;
 //int y_rivet = 0;
-int z_rivet = 0;
 float gyro_thresh = 20.0;
 
 // States
@@ -579,7 +578,8 @@ void update_gun_positions() {
 
 
 bool is_rivet(float z) {
-  int z_diff = min(min(min(abs(z - z_rivet), abs(180 + z - z_rivet)), abs(z - z_rivet - 180)), abs(z - z_rivet - 360));
+  int positive_z = int(z + 360) % 360;
+  int z_diff = min(min(positive_z, abs(positive_z-180)), abs(positive_z - 360));
   if (z_diff < gyro_thresh) {
     return true;
   }
