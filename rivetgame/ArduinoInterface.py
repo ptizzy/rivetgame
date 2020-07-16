@@ -34,7 +34,7 @@ class BaseArduinoInterface:
         elif player_num == 1:
             return self.msg_dict.get("c", 0)
 
-    def get_max_combo(self, player_num=0):
+    def get_rivet_attempts(self, player_num=0):
         if player_num == 0:
             return self.msg_dict.get("M", 0)
         elif player_num == 1:

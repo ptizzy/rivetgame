@@ -250,7 +250,7 @@ void demo()
 void training()
 {
   // training loop
-  for (int i = 0 ; i < 64 ; i++) {
+  for (int i = 0 ; i < NUM_LEDS ; i++) {
     leds[i] = CRGB(0, 0, 0);
   }
   FastLED.show();
@@ -602,7 +602,7 @@ byte read_led(int diode_pin) {
   byte result = 0;
 
   for (int serialByte = 7; serialByte >= 0; serialByte-- ) {
-    for (int LEDSerial = 0; LEDSerial < 64; LEDSerial++ ) {
+    for (int LEDSerial = 0; LEDSerial < NUM_LEDS; LEDSerial++ ) {
       if (bitRead(LEDSerial + 1, serialByte)) {
         leds[LEDSerial] = CRGB(255, 255, 255);
       }
@@ -622,7 +622,7 @@ byte read_led(int diode_pin) {
   byte result2 = 0;
 
   for (int serialByte = 7; serialByte >= 0; serialByte-- ) {
-    for (int LEDSerial = 0; LEDSerial < 64; LEDSerial++ ) {
+    for (int LEDSerial = 0; LEDSerial < NUM_LEDS; LEDSerial++ ) {
       if (bitRead(LEDSerial + 1, serialByte)) {
         leds[LEDSerial] = CRGB(255, 255, 255);
       }
