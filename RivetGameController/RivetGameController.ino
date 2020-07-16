@@ -217,7 +217,7 @@ void demo()
 
 void training()
 {
-  if (counter % 6000 == 0) {
+  if (counter % 1000 == 0) {
     serial_update("A", int(z_a + 180.0) % 360);
     serial_update("a", int(z_b + 180.0) % 360);
     serial_update("R", 650 - analogRead(photo_a));
@@ -387,6 +387,14 @@ void trigger(int player) {
     Serial.println("GYRO incorrect");
   }
 
+  if(player == 1) {
+    rivet_attempts_a += 1;
+    serial_update("R", rivets_a);
+  } else {
+    rivet_attempts_b += 1;
+    serial_update("r", rivets_b);
+  }
+
   // If gun is not postioned right led index will be 255 or -1
   if (led_index >= 0 && led_index < NUM_LEDS) {
     fire_sucess(led_index, player);
@@ -411,12 +419,10 @@ void fire_sucess(int led_index, int player) {
     rivets_a += 1;
     points_a += 1.0 + (double(combo_a) / 10.0);
     combo_a += 1;
-    rivet_attempts_a = max(combo_a, rivet_attempts_a);
   } else {
     rivets_b += 1;
     points_b += 1.0 + (double(combo_b) / 10.0);
     combo_b += 1;
-    rivet_attempts_b = max(combo_b, rivet_attempts_b);
   }
 
   // Tell arduino about success for sound
@@ -427,12 +433,10 @@ void fire_sucess(int led_index, int player) {
   }
 
   if (player == 1) {
-    serial_update("R", rivets_a);
     serial_update("C", combo_a);
     serial_update("P", points_a);
     serial_update("M", rivet_attempts_a);
   } else {
-    serial_update("r", rivets_b);
     serial_update("p", points_b);
     serial_update("c", combo_b);
     serial_update("m", rivet_attempts_b);

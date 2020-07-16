@@ -127,7 +127,7 @@ def game_screen(arduino, screen, time):
     if attempts > 0:
         accuracy_0 = arduino.get_rivets(player_num=0) / attempts
     text_w_drop(screen,
-                "Accuracy: %d%%" % accuracy_0,
+                "Accuracy: {:.0%}".format(accuracy_0),
                 column_x,
                 column_y + subtext_size * 2, subtext_size - 10, left_player_color, 5)
     text_w_drop(screen, "Streak: %d" % (arduino.get_combo(player_num=0)), column_x, column_y + subtext_size * 3,
@@ -154,7 +154,7 @@ def game_screen(arduino, screen, time):
     if attempts > 0:
         accuracy_1 = arduino.get_rivets(player_num=1) / attempts
     text_w_drop(screen,
-                "Accuracy: %d%%" % accuracy_1,
+                "Accuracy: {:.0%}".format(accuracy_1),
                 column_x,
                 column_y + subtext_size * 2, subtext_size - 10, right_player_color, 5)
     text_w_drop(screen, "Streak: %d" % (arduino.get_combo(player_num=1)), column_x, column_y + subtext_size * 3,
