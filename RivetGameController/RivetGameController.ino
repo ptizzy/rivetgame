@@ -389,10 +389,10 @@ void trigger(int player) {
 
   if(player == 1) {
     rivet_attempts_a += 1;
-    serial_update("R", rivets_a);
+    serial_update("M", rivet_attempts_a);
   } else {
     rivet_attempts_b += 1;
-    serial_update("r", rivets_b);
+    serial_update("m", rivet_attempts_b);
   }
 
   // If gun is not postioned right led index will be 255 or -1
