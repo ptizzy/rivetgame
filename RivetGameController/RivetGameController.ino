@@ -236,7 +236,7 @@ void training()
       }
     } else {
       // Let the second person have a couple seconds to keep trying
-      int seconds_left = 10 - int((millis() - state_timer) / 1000);
+      int seconds_left = 8 - int((millis() - state_timer) / 1000);
       serial_update("T", seconds_left);
 
       if (seconds_left <= 0) {
@@ -349,10 +349,14 @@ void on_trigger_b() {
       trigger_b_ready = true;
       break;
     case WINNER:
-      to_high_score();
+      if (millis() - state_timer > 15000) {
+        to_high_score();
+      }
       break;
     case HIGH_SCORE:
-      to_demo();
+      if (millis() - state_timer > 15000) {
+        to_demo();
+      }
       break;
   }
 }
