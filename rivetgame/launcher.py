@@ -50,6 +50,8 @@ def main(arduino):
     screen.fill((255, 255, 255))
     # Initialise font support
     pygame.font.init()
+    # Remove cursor
+    pygame.mouse.set_visible(0)
 
     # Render the screen
     pygame.display.update()
