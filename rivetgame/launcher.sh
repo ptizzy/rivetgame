@@ -1,18 +1,17 @@
 cd /home/pi/rivetgame/rivetgame
 amixer set PCM -- 70%
-echo "--------------------------------------------"
+#echo "--------------------------------------------"
 echo "Waiting 5 seconds to connect to the internet"
-echo "--------------------------------------------"
+#echo "--------------------------------------------"
 sleep 5
-echo "----------------------------"
+#echo "----------------------------"
 echo "Pulling new code from github"
-echo "----------------------------"
+#echo "----------------------------"
 git pull origin master
 sleep 5
-echo "---------------------------------------------"
+#echo "---------------------------------------------"
 echo "Waiting 10 seconds for arduino to upload code"
-echo "---------------------------------------------"
+#echo "---------------------------------------------"
 sh upload_arduino.sh &
-#arduino --board arduino:avr:mega:cpu=atmega2560 --port /dev/ttyUSB1 --upload /home/pi/rivetgame/RivetGameController/RivetGameController.ino &
 sleep 10
 python3 launcher.py
