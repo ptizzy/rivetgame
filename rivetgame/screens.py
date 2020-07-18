@@ -93,13 +93,18 @@ def training_screen(arduino, screen, time):
 
 
 def training_complete_screen(arduino, screen, time):
-    draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
+    draw_rivetrace_bkg(arduino, screen, time, "Training Successful!")
 
-    text_w_drop(screen, 'Training Successful', screen.get_width() * 0.5, screen.get_height() * 0.45, 150,
-                (255, 255, 255), 15)
-    text_w_drop(screen, 'Pull Trigger to Continue', screen.get_width() * 0.5, screen.get_height() * 0.88, 80, fwa_grey,
-                7, math.sin(time * 10) * 100 + 100)
+    text_w_drop(screen, 'Pull Trigger to Race!',
+                screen.get_width() * 0.5, screen.get_height() * 0.45, 120,
+                fwa_grey, 10, math.sin(time * 10) * 100 + 100)
 
+    text_w_drop(screen, 'Hint: Accuracy is important!',
+                screen.get_width() * 0.5, screen.get_height() * 0.85, 30,
+                (255, 255, 255), 5)
+    text_w_drop(screen, 'You get more points by setting a bunch of accurate rivets in a row!',
+                screen.get_width() * 0.5, screen.get_height() * 0.9, 30,
+                (255, 255, 255), 5)
 
 def game_screen(arduino, screen, time):
     draw_rivetrace_bkg(arduino, screen, time, "RIVET RACE!")
@@ -184,7 +189,7 @@ def game_complete_screen(arduino, screen, time):
     text_w_drop(screen, 'Score:', column_x + ease(time) * 200, column_y + 100, 60 + int(ease(time) * 40),
                 left_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=0)), column_x + ease(time) * 200, column_y + 290,
-                140 + int(ease(time) * 250), left_player_color, 10)
+                140 + int(ease(time) * 200), left_player_color, 10)
 
     # right player score display
 
@@ -200,7 +205,7 @@ def game_complete_screen(arduino, screen, time):
     text_w_drop(screen, 'Score:', column_x - ease(time) * 200, column_y + 100, 60 + int(ease(time) * 40),
                 right_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=1)), column_x - ease(time) * 200, column_y + 290,
-                140 + int(ease(time) * 250), right_player_color, 10)
+                140 + int(ease(time) * 200), right_player_color, 10)
 
 
 def leaderboard(arduino, screen, time):
