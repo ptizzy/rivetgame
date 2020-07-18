@@ -63,7 +63,6 @@ def training_screen(arduino, screen, time):
         color_0 = fwa_medium_green
     color_1 = fwa_medium_blue
     angle_1 = arduino.get_angle(player_num=1)
-    print("ANGLE1", angle_1)
     if abs(angle_1) < 20 or abs(angle_1 - 180) < 20 or abs(angle_1 - 360) < 20:
         color_1 = fwa_medium_green
     draw_box(screen, column_x, column_y + 220, 400, 300, background_color=color_0)

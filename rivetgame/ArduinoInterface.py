@@ -10,12 +10,8 @@ class BaseArduinoInterface:
 
     def __init__(self, msg_dict):
         self.msg_dict = msg_dict
-        pygame.mixer.init()
-        self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
-        self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
-        self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
+        self.learderboard = range(10)
         self.start_time = time.time()
-        self.learderboard = list()
         if os.path.exists("leaderboard.pkl"):
             try:
                 with open("leaderboard.pkl", "rb") as f:
@@ -79,7 +75,7 @@ class BaseArduinoInterface:
         return self.start_time
 
     def read_serial(self, target_msg=None):
-        pass
+        return {}
 
 
 class ArduinoInterface(BaseArduinoInterface):
@@ -92,6 +88,10 @@ class ArduinoInterface(BaseArduinoInterface):
         self.baudrate = baudrate
         self.hue = 127
         self.animation = 2
+        pygame.mixer.init()
+        self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
+        self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
+        self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
         self.interface = None
 
     def __enter__(self):

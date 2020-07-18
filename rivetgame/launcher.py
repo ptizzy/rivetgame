@@ -57,7 +57,6 @@ def main(arduino):
     # Run until the user asks to quit
     running = True
     while running:
-
         # Did the user press escape? If so, exit to the console
         for event in pygame.event.get():
             if event.type == KEYDOWN:

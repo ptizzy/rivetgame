@@ -1,4 +1,5 @@
 cd /home/pi/rivetgame/rivetgame
+amixer set PCM -- 100%
 echo "Waiting 5 seconds to connect to the internet"
 sleep 5
 echo "pulling github"
