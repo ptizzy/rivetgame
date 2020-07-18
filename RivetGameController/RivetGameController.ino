@@ -333,13 +333,13 @@ void on_trigger_a() {
       break;
     case WINNER:
       // Wait at least 15 seconds before leaving screen
-      if (millis() - state_timer > 15000) {
+      if (millis() - state_timer > 5000) {
         to_high_score();
       }
       break;
     case HIGH_SCORE:
       // Wait at least 15 seconds before leaving screen
-      if (millis() - state_timer > 15000) {
+      if (millis() - state_timer > 5000) {
         to_demo();
       }
       break;
@@ -371,12 +371,12 @@ void on_trigger_b() {
       trigger_b_ready = true;
       break;
     case WINNER:
-      if (millis() - state_timer > 15000) {
+      if (millis() - state_timer > 5000) {
         to_high_score();
       }
       break;
     case HIGH_SCORE:
-      if (millis() - state_timer > 15000) {
+      if (millis() - state_timer > 5000) {
         to_demo();
       }
       break;
