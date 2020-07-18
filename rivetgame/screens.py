@@ -189,7 +189,7 @@ def game_complete_screen(arduino, screen, time):
     text_w_drop(screen, 'Score:', column_x + ease(time) * 200, column_y + 100, 60 + int(ease(time) * 40),
                 left_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=0)), column_x + ease(time) * 200, column_y + 290,
-                140 + int(ease(time) * 200), left_player_color, 10)
+                140 + int(ease(time) * 180), left_player_color, 10)
 
     # right player score display
 
@@ -205,7 +205,7 @@ def game_complete_screen(arduino, screen, time):
     text_w_drop(screen, 'Score:', column_x - ease(time) * 200, column_y + 100, 60 + int(ease(time) * 40),
                 right_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=1)), column_x - ease(time) * 200, column_y + 290,
-                140 + int(ease(time) * 200), right_player_color, 10)
+                140 + int(ease(time) * 180), right_player_color, 10)
 
 
 def leaderboard(arduino, screen, time):
@@ -226,9 +226,9 @@ def leaderboard(arduino, screen, time):
         text_w_drop(screen, str(i + 1), screen.get_width() * 0.3, start_y + i * 60, 50, fwa_grey, 5)
         text_w_drop(screen, str(score), screen.get_width() * 0.5, start_y + i * 60, 50, fwa_grey, 5)
         if abs(score - player_0_score) < 0.01:
-            text_w_drop(screen, 'New High Score!', screen.get_width() * 0.7, start_y + i * 60, 50, left_player_color, 5)
+            text_w_drop(screen, 'Left Player Set a High Score!', screen.get_width() * 0.7, start_y + i * 60, 50, left_player_color, 5)
         if abs(score - player_1_score) < 0.01:
-            text_w_drop(screen, 'New High Score!', screen.get_width() * 0.7, start_y + i * 60, 50, right_player_color, 5)
+            text_w_drop(screen, 'Right Player Set a High Score!', screen.get_width() * 0.7, start_y + i * 60, 50, right_player_color, 5)
 
 
 def ease(time):
