@@ -200,9 +200,16 @@ void demo()
     //    serial_update("A", int(z_a + 180.0) % 360);
     //    serial_update("a", int(z_b + 180.0) % 360);
 
+    int clean_z_a = int(z_a + 180.0) % 360;
+    int clean_z_b = int(z_b + 180.0) % 360;
+
     if (
-      (z_a > -5 && z_a < 60) || (z_b > -5 && z_b < 60) ||
-      (abs(z_a) > 180 && abs(z_a) < 240) || (abs(z_b) > 180 && abs(z_b) < 240)
+      (clean_z_a > 0 && z_a < 20) || 
+      (clean_z_b > 0 && z_b < 20) ||
+      (clean_z_a > 300) || 
+      (clean_z_b > 300) ||
+      (clean_z_a > 120 && clean_z_a < 200) || 
+      (clean_z_b > 120 && clean_z_b < 200)
     ) {
       to_training();
     }
