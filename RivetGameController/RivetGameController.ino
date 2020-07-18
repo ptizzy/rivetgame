@@ -70,7 +70,8 @@ int state = DEMO;
 unsigned long counter = 0;
 long state_timer = 0;
 unsigned long last_time = 0;
-boolean training_complete = false;
+boolean training_complete_a = false;
+boolean training_complete_b = false;
 
 
 void setup() {
@@ -221,18 +222,25 @@ void training()
     serial_update("R", 650 - analogRead(photo_a));
     serial_update("r", 650 - analogRead(photo_b));
 
-    if (!training_complete) {
+
+    if (!training_complete_a && training_complete_b) {
+      to_demo();
+    } else if (!training_complete_a || !training_complete_b) {
       serial_update("T", -1);
-      if ((is_rivet(z_a) && analogRead(photo_a) < 600) ||
-          (is_rivet(z_b) && analogRead(photo_b) < 600)) {
-        // Someone completed training
+
+      if (is_rivet(z_a) && analogRead(photo_a) < 600) {
         state_timer = millis();
-        training_complete = true;
+        training_complete_a = true;
+      }
+
+      if (is_rivet(z_b) && analogRead(photo_b) < 600) {
+      state_timer = millis();
+        training_complete_b = true;
       }
 
       // if we have been sitting in training mode for 2 minutes return to demo mode
       if (millis() - state_timer > 180000) {
-        to_demo();
+      to_demo();
       }
     } else {
       // Let the second person have a couple seconds to keep trying
@@ -492,7 +500,8 @@ void to_training()
   // start training loop
   state = TRAINING;
   serial_update("S", state);
-  training_complete = false;
+  training_complete_a = false;
+  training_complete_b = false;
   state_timer = millis();
 }
 
