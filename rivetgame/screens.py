@@ -33,7 +33,7 @@ def training_screen(arduino, screen, time):
 
     column_x = screen.get_width() * 0.3
 
-    
+
     draw_box(screen, column_x, column_y + 220, 400, 300)
     draw_box(screen, screen.get_width() - column_x, column_y + 220, 400, 300)
 
@@ -236,9 +236,9 @@ def draw_rivetrace_bkg(arduino, screen, time, screen_title):
 
     text_w_drop(screen, screen_title, screen.get_width() * 0.5, 50, 140, (255, 196, 51), 10)
 
-    text_w_drop(screen, str(arduino.get_state()), 20, 20, 20, (255, 196, 51), 2, 50)  # print state for debugging
+    # text_w_drop(screen, str(arduino.get_state()), 20, 20, 20, (255, 196, 51), 2, 50)  # print state for debugging
 
-    text_w_drop(screen, 'v1.0', 20, screen.get_height() - 20, 20, (255, 196, 51), 2, 50)  # print version number
+    text_w_drop(screen, 'v1.1', 20, screen.get_height() - 20, 20, (255, 196, 51), 2, 50)  # print version number
 
 
 def text_w_drop(screen, text_string, x, y, size, text_color, drop_dist, drop_opacity=None, justify=None):
