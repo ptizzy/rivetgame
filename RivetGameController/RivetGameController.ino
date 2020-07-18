@@ -55,10 +55,6 @@ double points_b = 0;
 int combo_b = 0;
 int rivet_attempts_b = 0;
 
-// Orientation windows
-//int y_holster = -20;
-//int z_holster = 60;
-//int y_rivet = 0;
 float gyro_thresh = 20.0;
 
 // States
@@ -200,13 +196,13 @@ void demo()
 {
 
   if (counter % 1000 == 0) {
-//    serial_update("A", int(z_a + 180.0) % 360);
-//    serial_update("a", int(z_b + 180.0) % 360);
+    //    serial_update("A", int(z_a + 180.0) % 360);
+    //    serial_update("a", int(z_b + 180.0) % 360);
 
     if (
-      (z_a > 0 && z_a < 60) || (z_b > 0 && z_b < 60) || 
+      (z_a > 0 && z_a < 60) || (z_b > 0 && z_b < 60) ||
       (abs(z_a) > 180 && abs(z_a) < 240) || (abs(z_b) > 180 && abs(z_b) < 240)
-      ) {
+    ) {
       to_training();
     }
   }
@@ -235,7 +231,7 @@ void training()
       }
 
       // if we have been sitting in training mode for 2 minutes return to demo mode
-      if(millis() - state_timer > 180000) {
+      if (millis() - state_timer > 180000) {
         to_demo();
       }
     } else {
@@ -389,7 +385,7 @@ void trigger(int player) {
     Serial.println("GYRO incorrect");
   }
 
-  if(player == 1) {
+  if (player == 1) {
     rivet_attempts_a += 1;
     serial_update("M", rivet_attempts_a);
   } else {
@@ -512,8 +508,10 @@ void to_game()
   points_b = 0;
   combo_a = 0;
   rivet_attempts_a = 0;
+  rivets_a = 0;
   combo_b = 0;
   rivet_attempts_b = 0;
+  rivets_b = 0;
   for (int i = 0; i < NUM_LEDS; i++) {
     led_states[i] = 0;
   }
@@ -579,7 +577,7 @@ void update_gun_positions() {
 
 bool is_rivet(float z) {
   int positive_z = int(z + 360) % 360;
-  int z_diff = min(min(positive_z, abs(positive_z-180)), abs(positive_z - 360));
+  int z_diff = min(min(positive_z, abs(positive_z - 180)), abs(positive_z - 360));
   if (z_diff < gyro_thresh) {
     return true;
   }
