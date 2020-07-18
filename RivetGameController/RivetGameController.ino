@@ -325,7 +325,7 @@ void on_trigger_a() {
       break;
     case GAME:
       // Tell arduino about success for sound
-      serial_update("V", player);
+      serial_update("V", 1);
       trigger_a_ready = true;
       break;
     case WINNER:
@@ -364,7 +364,7 @@ void on_trigger_b() {
       break;
     case GAME:
       // Tell arduino about success for sound
-      serial_update("V", player);
+      serial_update("V", 2);
       trigger_b_ready = true;
       break;
     case WINNER:
