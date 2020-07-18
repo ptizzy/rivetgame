@@ -34,7 +34,7 @@ static unsigned long last_interrupt_time_a = 0;
 const int photo_a = A0;   // Photodiode input pin
 const int photo_a_out = 12;   // Photodiode 5v pin
 Adafruit_BNO055 bno_a = Adafruit_BNO055(55, 0x28);
-float x_a, y_a, z_a = 0;
+float x_a, y_a, z_a = 60;
 int rivets_a = 0;
 double points_a = 0;
 int combo_a = 0;
@@ -49,7 +49,7 @@ static unsigned long last_interrupt_time_b = 0;
 const int photo_b = A5;   // Photodiode input pin
 const int photo_b_out = 8;   // Photodiode 5v pin
 Adafruit_BNO055 bno_b = Adafruit_BNO055(55, 0x29);
-float x_b, y_b, z_b = 0;
+float x_b, y_b, z_b = 60;
 int rivets_b = 0;
 double points_b = 0;
 int combo_b = 0;
@@ -233,7 +233,7 @@ void training()
     if (training_complete_a && training_complete_b) {
       // Both people have finished training
       to_training_complete();
-    } else if (!training_complete_a || !training_complete_b) {
+    } else if (training_complete_a || training_complete_b) {
       // No one has finished training
       serial_update("T", -1);
 

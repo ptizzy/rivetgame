@@ -64,9 +64,9 @@ class BaseArduinoInterface:
 
     def get_angle(self, player_num=0):
         if player_num == 0:
-            return self.msg_dict.get("A", 0)
+            return self.msg_dict.get("A", 240)
         elif player_num == 1:
-            return self.msg_dict.get("a", 0)
+            return self.msg_dict.get("a", 240)
 
     def get_remaining_time(self):
         return self.msg_dict.get("T", 0)

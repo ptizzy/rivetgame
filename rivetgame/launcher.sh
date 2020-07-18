@@ -1,5 +1,5 @@
 cd /home/pi/rivetgame/rivetgame
-amixer set PCM -- 70%
+amixer set PCM -- 100%
 #echo "--------------------------------------------"
 echo "Waiting 5 seconds to connect to the internet"
 #echo "--------------------------------------------"
