@@ -231,8 +231,10 @@ void training()
 
 
     if (training_complete_a && training_complete_b) {
+      // Both people have finished training
       to_training_complete();
     } else if (!training_complete_a || !training_complete_b) {
+      // No one has finished training
       serial_update("T", -1);
 
       if (is_rivet(z_a) && analogRead(photo_a) < 600) {
@@ -250,6 +252,7 @@ void training()
         to_demo();
       }
     } else {
+      // One person has finished training
       // Let the second person have a couple seconds to keep trying
       int seconds_left = 8 - int((millis() - state_timer) / 1000);
       serial_update("T", seconds_left);
@@ -446,10 +449,6 @@ void fire_sucess(int led_index, int player) {
     combo_b += 1;
   }
 
-  if (have_won()) {
-    to_winner();
-  }
-
   if (player == 1) {
     serial_update("C", combo_a);
     serial_update("P", points_a);
@@ -458,6 +457,10 @@ void fire_sucess(int led_index, int player) {
     serial_update("p", points_b);
     serial_update("c", combo_b);
     serial_update("r", rivets_b);
+  }
+
+  if (have_won()) {
+    to_winner();
   }
 }
 
@@ -641,24 +644,6 @@ void demo_lights() {
     else {
       leds[LEDSerial] = CRGB(0, 0, 0);
     }
-  }
-
-  FastLED.show();
-}
-
-
-void demo_lights_2() {
-  double phase = sin(double(counter) / 5000.0);
-  double freq = sin(double(counter) / 50000.0);
-  double amplitude = cos(double(counter) / 20000.0) / 2.0;
-  // demo loop color wave
-  for (int LEDSerial = 0; LEDSerial < NUM_LEDS; LEDSerial++ ) {
-    int row = LEDSerial / NUM_LEDS_PER_ROW;
-    double col = (LEDSerial % NUM_LEDS_PER_ROW);
-    int r = int(abs(255 * sin((double(counter) / 5000.0) + (row * sin((double(counter) / 50000.0)) / 50))));
-    int g = int(abs(155 * cos((double(counter) / 17000.0) + (row * col * sin((double(counter) / 20000.0)) / 20))));
-    int b = int(abs(155 * sin((double(counter) / 4000.0) + (col * sin((double(counter) / 10000.0)) / 10))));
-    leds[LEDSerial] = CRGB(b, g, r);
   }
 
   FastLED.show();

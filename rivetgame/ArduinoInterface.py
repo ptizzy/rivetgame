@@ -10,7 +10,7 @@ class BaseArduinoInterface:
 
     def __init__(self, msg_dict):
         self.msg_dict = msg_dict
-        self.learderboard = range(10)
+        self.learderboard = list(range(10))
         self.start_time = time.time()
         if os.path.exists("leaderboard.pkl"):
             try:
@@ -21,11 +21,11 @@ class BaseArduinoInterface:
 
 
     def add_score_to_leaderboard(self, score):
-        self.learderboard.append(score)
-        self.learderboard = list(set(self.learderboard))
-        self.learderboard.sort(reverse=True)
-        self.learderboard = self.learderboard[:10]
         try:
+            self.learderboard.append(score)
+            self.learderboard = list(set(self.learderboard))
+            self.learderboard.sort(reverse=True)
+            self.learderboard = self.learderboard[:10]
             with open("leaderboard.pkl", "wb") as f:
                 pickle.dump(self.learderboard, f)
         except Exception as e:
