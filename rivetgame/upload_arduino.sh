@@ -1,3 +1,4 @@
+# Could not get this working, so removed it
 cd /home/pi/rivetgame/RivetGameController
 #sudo apt-get install xvfb -y
 Xvfb :4 -nolisten tcp -screen :$SCREEN 1280x800x24 &
