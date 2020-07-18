@@ -223,12 +223,18 @@ def leaderboard(arduino, screen, time):
     player_1_score = arduino.get_points(player_num=1)
 
     for i, score in enumerate(top_score):
-        text_w_drop(screen, str(i + 1), screen.get_width() * 0.3, start_y + i * 60, 50, fwa_grey, 5)
-        text_w_drop(screen, str(score), screen.get_width() * 0.5, start_y + i * 60, 50, fwa_grey, 5)
+
         if abs(score - player_0_score) < 0.01:
-            text_w_drop(screen, 'Left Player Set a High Score!', screen.get_width() * 0.6, start_y + i * 60, 50, left_player_color, 5, 140, 2)
-        if abs(score - player_1_score) < 0.01:
-            text_w_drop(screen, 'Right Player Set a High Score!', screen.get_width() * 0.6, start_y + i * 60, 50, right_player_color, 5, 140, 2)
+            text_w_drop(screen, str(i + 1), screen.get_width() * 0.3, start_y + i * 60, 50, left_player_color, 5)
+            text_w_drop(screen, str(score), screen.get_width() * 0.5, start_y + i * 60, 50, left_player_color, 5)
+            text_w_drop(screen, 'Left Player Set a High Score!', screen.get_width() * 0.58, start_y + i * 60, 50, left_player_color, 5, 140, 2)
+        elif abs(score - player_1_score) < 0.01:
+            text_w_drop(screen, str(i + 1), screen.get_width() * 0.3, start_y + i * 60, 50, right_player_color, 5)
+            text_w_drop(screen, str(score), screen.get_width() * 0.5, start_y + i * 60, 50, right_player_color, 5)
+            text_w_drop(screen, 'Right Player Set a High Score!', screen.get_width() * 0.58, start_y + i * 60, 50, right_player_color, 5, 140, 2)
+        else:
+            text_w_drop(screen, str(i + 1), screen.get_width() * 0.3, start_y + i * 60, 50, fwa_grey, 5)
+            text_w_drop(screen, str(score), screen.get_width() * 0.5, start_y + i * 60, 50, fwa_grey, 5)
 
 
 def ease(time):
