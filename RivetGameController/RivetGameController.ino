@@ -358,7 +358,7 @@ void on_trigger_b() {
       break;
     case TRAINING:
       //      to_training_complete();
-      break;8
+      break;
     case TRAINING_COMPLETE:
       to_game();
       break;
