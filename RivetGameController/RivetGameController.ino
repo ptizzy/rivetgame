@@ -246,7 +246,7 @@ void training()
       }
 
       // if we have been sitting in training mode for 2 minutes return to demo mode
-      if (millis() - state_timer > 180000) {
+      if (millis() - state_timer > 15000) {
         to_demo();
       }
     } else {
