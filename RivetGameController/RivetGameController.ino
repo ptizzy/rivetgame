@@ -204,11 +204,11 @@ void demo()
     int clean_z_b = int(z_b + 180.0) % 360;
 
     if (
-      (clean_z_a > 0 && z_a < 20) || 
+      (clean_z_a > 0 && z_a < 20) ||
       (clean_z_b > 0 && z_b < 20) ||
-      (clean_z_a > 300) || 
+      (clean_z_a > 300) ||
       (clean_z_b > 300) ||
-      (clean_z_a > 120 && clean_z_a < 200) || 
+      (clean_z_a > 120 && clean_z_a < 200) ||
       (clean_z_b > 120 && clean_z_b < 200)
     ) {
       to_training();
@@ -241,13 +241,13 @@ void training()
       }
 
       if (is_rivet(z_b) && analogRead(photo_b) < 600) {
-      state_timer = millis();
+        state_timer = millis();
         training_complete_b = true;
       }
 
       // if we have been sitting in training mode for 2 minutes return to demo mode
       if (millis() - state_timer > 180000) {
-      to_demo();
+        to_demo();
       }
     } else {
       // Let the second person have a couple seconds to keep trying
@@ -324,6 +324,8 @@ void on_trigger_a() {
       to_game();
       break;
     case GAME:
+      // Tell arduino about success for sound
+      serial_update("V", player);
       trigger_a_ready = true;
       break;
     case WINNER:
@@ -361,6 +363,8 @@ void on_trigger_b() {
       to_game();
       break;
     case GAME:
+      // Tell arduino about success for sound
+      serial_update("V", player);
       trigger_b_ready = true;
       break;
     case WINNER:
@@ -441,9 +445,6 @@ void fire_sucess(int led_index, int player) {
     points_b += 1.0 + (double(combo_b) / 10.0);
     combo_b += 1;
   }
-
-  // Tell arduino about success for sound
-  serial_update("V", player);
 
   if (have_won()) {
     to_winner();
