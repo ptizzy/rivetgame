@@ -230,8 +230,8 @@ void training()
     serial_update("r", 650 - analogRead(photo_b));
 
 
-    if (!training_complete_a && training_complete_b) {
-      to_demo();
+    if (training_complete_a && training_complete_b) {
+      to_training_complete();
     } else if (!training_complete_a || !training_complete_b) {
       serial_update("T", -1);
 
@@ -358,7 +358,7 @@ void on_trigger_b() {
       break;
     case TRAINING:
       //      to_training_complete();
-      break;
+      break;8
     case TRAINING_COMPLETE:
       to_game();
       break;
