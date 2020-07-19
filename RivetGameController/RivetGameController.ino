@@ -34,7 +34,7 @@ static unsigned long last_interrupt_time_a = 0;
 const int photo_a = A0;   // Photodiode input pin
 const int photo_a_out = 12;   // Photodiode 5v pin
 Adafruit_BNO055 bno_a = Adafruit_BNO055(55, 0x28);
-float x_a, y_a, z_a = 60;
+float x_a, y_a, z_a = 0;
 int rivets_a = 0;
 double points_a = 0;
 int combo_a = 0;
@@ -49,7 +49,7 @@ static unsigned long last_interrupt_time_b = 0;
 const int photo_b = A5;   // Photodiode input pin
 const int photo_b_out = 8;   // Photodiode 5v pin
 Adafruit_BNO055 bno_b = Adafruit_BNO055(55, 0x29);
-float x_b, y_b, z_b = 60;
+float x_b, y_b, z_b = 0;
 int rivets_b = 0;
 double points_b = 0;
 int combo_b = 0;
@@ -120,7 +120,12 @@ void setup() {
   LEDS.addLeds<APA102, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
 
   Serial.println("SETUP");
-
+  update_gun_positions();
+  delay(500);
+  update_gun_positions();
+  delay(500);
+  update_gun_positions();
+  delay(500);
 }
 
 
@@ -234,24 +239,6 @@ void training()
       // Both people have finished training
       to_training_complete();
     } else if (training_complete_a || training_complete_b) {
-      // No one has finished training
-      serial_update("T", -1);
-
-      if (is_rivet(z_a) && analogRead(photo_a) < 600) {
-        state_timer = millis();
-        training_complete_a = true;
-      }
-
-      if (is_rivet(z_b) && analogRead(photo_b) < 600) {
-        state_timer = millis();
-        training_complete_b = true;
-      }
-
-      // if we have been sitting in training mode for 2 minutes return to demo mode
-      if (millis() - state_timer > 15000) {
-        to_demo();
-      }
-    } else {
       // One person has finished training
       // Let the second person have a couple seconds to keep trying
       int seconds_left = 8 - int((millis() - state_timer) / 1000);
@@ -261,6 +248,24 @@ void training()
         // wait 15 seconds after training done to transition
         to_training_complete();
       }
+    } else {
+      // No one has finished training
+      serial_update("T", -1);
+
+      // if we have been sitting in training mode for 2 minutes return to demo mode
+      if (millis() - state_timer > 15000) {
+        to_demo();
+      }
+    }
+
+    if (is_rivet(z_a) && analogRead(photo_a) < 600) {
+      state_timer = millis();
+      training_complete_a = true;
+    }
+
+    if (is_rivet(z_b) && analogRead(photo_b) < 600) {
+      state_timer = millis();
+      training_complete_b = true;
     }
   }
 
