@@ -1,4 +1,4 @@
-# Set the arduino to reboot at midnight
+# Set the pi to reboot at midnight
 echo "#! /bin/bash\n/sbin/reboot" > /etc/cron.daily/rivet_reboot &
 chmod +x /etc/cron.daily/rivet_reboot &
 
