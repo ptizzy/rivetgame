@@ -74,6 +74,21 @@ boolean training_complete_a = false;
 boolean training_complete_b = false;
 
 
+// Data Logging
+int a_miss_gyro = 0;
+int b_miss_gyro = 0;
+int a_miss_match = 0;
+int b_miss_match = 0;
+int a_miss_zero = 0;
+int b_miss_zero = 0;
+double a_last_gyro = -1;
+double b_last_gyro = -1;
+double a_last_match_light_level = -1;
+double b_last_match_light_level = -1;
+double a_last_zero_light_level = -1;
+double b_last_zero_light_level = -1;
+double last_light_level = -1;
+
 void setup() {
 
   //  // Set the idle timeout
@@ -424,6 +439,33 @@ void trigger(int player) {
     serial_update("m", rivet_attempts_b);
   }
 
+  // data logging
+  if (led_index == 0) {
+    if (player == 1) {
+      a_miss_zero += 1;
+      a_last_zero_light_level = last_light_level;
+    } else {
+      b_miss_zero += 1;
+      b_last_zero_light_level = last_light_level;
+    }
+  } else if (led_index == -1) {
+    if (player == 1) {
+      a_miss_gyro += 1;
+      a_last_gyro = z_a;
+    } else {
+      b_miss_gyro += 1;
+      b_last_gyro = z_b;
+    }
+  } else if (led_index == -2) {
+    if (player == 1) {
+      a_miss_match += 1;
+      a_last_match_light_level = last_light_level;
+    } else {
+      b_miss_match += 1;
+      b_last_match_light_level = last_light_level;
+    }
+  }
+
   // If gun is not postioned right led index will be 255 or -1
   if (led_index >= 0 && led_index < NUM_LEDS) {
     fire_sucess(led_index, player);
@@ -572,11 +614,37 @@ void to_winner()
 
 void to_high_score()
 {
+  // write data log
+  serial_update("z", a_miss_gyro);
+  serial_update("z", b_miss_gyro);
+  serial_update("z", a_miss_match);
+  serial_update("z", b_miss_match);
+  serial_update("z", a_miss_zero);
+  serial_update("z", b_miss_zero);
+  serial_update("z", a_last_gyro);
+  serial_update("z", b_last_gyro);
+  serial_update("z", a_last_match_light_level);
+  serial_update("z", b_last_match_light_level);
+  serial_update("z", a_last_zero_light_level);
+  serial_update("z", b_last_zero_light_level);
+
+  a_miss_gyro = 0;
+  b_miss_gyro = 0;
+  a_miss_match = 0;
+  b_miss_match = 0;
+  a_miss_zero = 0;
+  b_miss_zero = 0;
+  a_last_gyro = 0;
+  b_last_gyro = 0;
+  a_last_match_light_level = 0;
+  b_last_match_light_level = 0;
+  a_last_zero_light_level = 0;
+  b_last_zero_light_level = 0;
+
   // start high score loop
   state_timer = millis();
   state = HIGH_SCORE;
   serial_update("S", state);
-
 }
 
 
@@ -692,11 +760,12 @@ byte read_led(int diode_pin) {
     FastLED.show();
 
     //    delay(50);
-    result2 = (result2 << 1) + byte(analogRead(diode_pin) < 600);
+    last_light_level = analogRead(diode_pin);
+    result2 = (result2 << 1) + byte(last_light_level < 600);
   }
 
   if (result != result2) {
-    return 0;
+    return -2;
   }
 
   return result;

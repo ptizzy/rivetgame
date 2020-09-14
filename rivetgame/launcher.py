@@ -11,6 +11,7 @@ import time
 from pygame.locals import *
 
 from ArduinoInterface import ArduinoInterface
+from firebase import push_text_log
 from screens import *
 
 
@@ -36,6 +37,7 @@ def main(arduino):
             pygame.display.init()
         except pygame.error:
             print('Driver: {0} failed.'.format(driver))
+            push_text_log('Driver: {0} failed.'.format(driver))
             continue
         found = True
         break
@@ -102,6 +104,7 @@ def run(controller_port):
             main(arduino)
     except Exception as e:
         print("Exception", e)
+        push_text_log(f"Exception {e}")
 
 
 if __name__ == '__main__':

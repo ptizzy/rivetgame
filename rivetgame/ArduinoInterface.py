@@ -6,23 +6,36 @@ import pygame
 import serial
 import pickle
 
+from firebase import push_data_log, push_text_log
+
+
 class BaseArduinoInterface:
 
     def __init__(self, msg_dict):
         self.msg_dict = msg_dict
         self.learderboard = list(range(10))
         self.start_time = time.time()
+        pygame.mixer.init()
+        self.countdown_sound = pygame.mixer.Sound("sounds/countdown.wav")
+        self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
+        self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
+        self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
+        self.countdown_ready = True
+        self.countdown_finished = time.time()
+
         if os.path.exists("leaderboard.pkl"):
             try:
                 with open("leaderboard.pkl", "rb") as f:
                     self.learderboard = pickle.load(f)
             except Exception as e:
                 print("Could not load leaderboard, it will be reset", e)
+                push_text_log(f"Could not load leaderboard, it will be reset {e}")
 
 
     def add_score_to_leaderboard(self, score):
         try:
             self.learderboard.append(score)
+            # remove duplicate scores
             self.learderboard = list(set(self.learderboard))
             self.learderboard.sort(reverse=True)
             self.learderboard = self.learderboard[:10]
@@ -30,6 +43,7 @@ class BaseArduinoInterface:
                 pickle.dump(self.learderboard, f)
         except Exception as e:
             print("Could not write leaderboard", e)
+            push_text_log(F"Could not write leaderboard {e}")
 
 
     def get_leaderboard(self):
@@ -84,14 +98,11 @@ class ArduinoInterface(BaseArduinoInterface):
     def __init__(self, port='COM6', baudrate=9600):
         """Set up the specs for a serial connection"""
         super().__init__({})
+        self.datalog = []
         self.port = port
         self.baudrate = baudrate
         self.hue = 127
         self.animation = 2
-        pygame.mixer.init()
-        self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
-        self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
-        self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
         self.interface = None
 
     def __enter__(self):
@@ -153,14 +164,35 @@ class ArduinoInterface(BaseArduinoInterface):
             return {}
         print(new_msg, msg_val)
 
+        self.apply_msg(new_msg, msg_val, target_msg)
+
+    def apply_msg(self, new_msg, msg_val, target_msg):
         if new_msg == "E":
             raise Exception("Error on arduino restarting")
         if new_msg == "S":
             self.start_time = time.time()
+            self.countdown_ready = True
             # As game finishes save high scores
             if msg_val == 4:
+                # Save data to firebase
+                self.datalog.append(self.get_points(player_num=0))
+                self.datalog.append(self.get_points(player_num=1))
+                self.datalog.append(self.get_rivets(player_num=0))
+                self.datalog.append(self.get_rivets(player_num=1))
+                self.datalog.append(self.get_combo(player_num=0))
+                self.datalog.append(self.get_combo(player_num=1))
+                push_data_log(self.datalog)
+                self.datalog = []
+
                 self.add_score_to_leaderboard(self.get_points(player_num=0))
                 self.add_score_to_leaderboard(self.get_points(player_num=1))
+
+        if new_msg == "T" and msg_val == 10:
+            self.countdown_ready = False
+            pygame.mixer.Sound.play(self.countdown_sound)
+
+        if new_msg == "z":
+            self.datalog.append(msg_val)
 
         if target_msg is not None and new_msg != target_msg:
             return {}
@@ -183,11 +215,12 @@ class ArduinoInterface(BaseArduinoInterface):
 
     def play_sound(self, command, value):
         # Successful
-        if command != "V":
-            return
-        if value == 1:
-            pygame.mixer.Sound.play(self.player1_sound_correct)
-        elif value == 2:
-            pygame.mixer.Sound.play(self.player2_sound_correct)
-        elif value == 3:
-            pygame.mixer.Sound.play(self.player_sound_wrong)
+        if command == "V":
+            if value == 1:
+                pygame.mixer.Sound.play(self.player1_sound_correct)
+            elif value == 2:
+                pygame.mixer.Sound.play(self.player2_sound_correct)
+            elif value == 3:
+                pygame.mixer.Sound.play(self.player_sound_wrong)
+        if command == "S":
+            pygame.mixer.Sound.stop(self.countdown_sound)
