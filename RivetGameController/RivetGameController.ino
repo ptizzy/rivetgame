@@ -156,17 +156,6 @@ void setup() {
 void loop() {
   counter = (counter + 1) % 1000000;
 
-  if (trigger_a_ready) {
-    trigger(1);
-    trigger_a_ready = false;
-  }
-
-
-  if (trigger_b_ready) {
-    trigger(2);
-    trigger_b_ready = false;
-  }
-
   // Update the gun position data
   if (counter % 1000 == 0) {
     update_gun_positions();
@@ -174,6 +163,17 @@ void loop() {
 
   // Animate the next frame of the current game mode.
   if (counter % 100 == 0) {
+    if (trigger_a_ready) {
+      trigger(1);
+      trigger_a_ready = false;
+    }
+
+
+    if (trigger_b_ready) {
+      trigger(2);
+      trigger_b_ready = false;
+    }
+
     switch (state) {
       case DEMO:
         demo();
@@ -768,7 +768,7 @@ byte read_led(int diode_pin) {
     FastLED.show();
 
     delay(5);
-    if(diode_pin == photo_a) {
+    if (diode_pin == photo_a) {
       result = (result << 1) + byte(analogRead(diode_pin) < 650);
     } else {
       result = (result << 1) + byte(analogRead(diode_pin) < 600);
@@ -793,7 +793,7 @@ byte read_led(int diode_pin) {
 
     delay(5);
     last_light_level = analogRead(diode_pin);
-    if(diode_pin == photo_a) {
+    if (diode_pin == photo_a) {
       result2 = (result2 << 1) + byte(last_light_level < 650);
     } else {
       result2 = (result2 << 1) + byte(last_light_level < 600);
