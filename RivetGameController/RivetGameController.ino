@@ -55,7 +55,8 @@ double points_b = 0;
 int combo_b = 0;
 int rivet_attempts_b = 0;
 
-float gyro_thresh = 20.0;
+float gyro_thresh_a = 22.0;
+float gyro_thresh_b = 20.0;
 
 // States
 #define DEMO       0
@@ -277,12 +278,12 @@ void training()
       }
     }
 
-    if (is_rivet(z_a) && analogRead(photo_a) < 600) {
+    if (is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) < 600) {
       state_timer = millis();
       training_complete_a = true;
     }
 
-    if (is_rivet(z_b) && analogRead(photo_b) < 600) {
+    if (is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) < 600) {
       state_timer = millis();
       training_complete_b = true;
     }
@@ -430,10 +431,10 @@ void trigger(int player) {
   // Check gyro
   boolean gyro_correct;
   if (player == 1) {
-    gyro_correct = is_rivet(z_a);
+    gyro_correct = is_rivet(z_a, gyro_thresh_a);
   }
   else {
-    gyro_correct = is_rivet(z_b);
+    gyro_correct = is_rivet(z_b, gyro_thresh_b);
   }
 
   if (gyro_correct) {
@@ -700,7 +701,7 @@ void update_gun_positions() {
 }
 
 
-bool is_rivet(float z) {
+bool is_rivet(float z, float gyro_thresh) {
   int positive_z = int(z + 360) % 360;
   int z_diff = min(min(positive_z, abs(positive_z - 180)), abs(positive_z - 360));
   if (z_diff < gyro_thresh) {
@@ -768,7 +769,11 @@ byte read_led(int diode_pin) {
     FastLED.show();
 
     //    delay(50);
-    result = (result << 1) + byte(analogRead(diode_pin) < 600);
+    if(diode_pin == photo_a) {
+      result = (result << 1) + byte(analogRead(diode_pin) < 550);
+    } else {
+      result = (result << 1) + byte(analogRead(diode_pin) < 600);
+    }
   }
 
   // Error correction
@@ -789,7 +794,11 @@ byte read_led(int diode_pin) {
 
     //    delay(50);
     last_light_level = analogRead(diode_pin);
-    result2 = (result2 << 1) + byte(last_light_level < 600);
+    if(diode_pin == photo_a) {
+      result2 = (result2 << 1) + byte(last_light_level < 550);
+    } else {
+      result2 = (result2 << 1) + byte(last_light_level < 600);
+    }
   }
 
   if (result != result2) {
