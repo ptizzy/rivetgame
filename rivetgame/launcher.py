@@ -104,6 +104,8 @@ def run(controller_port):
             main(arduino)
     except Exception as e:
         print("Exception", e)
+        if "could not open port" in str(e):
+            return
         push_text_log("Exception " + str(e))
 
 
