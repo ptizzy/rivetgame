@@ -769,9 +769,9 @@ byte read_led(int diode_pin) {
 
     delay(5);
     if (diode_pin == photo_a) {
-      result = (result << 1) + byte(analogRead(diode_pin) < 550);
+      result = (result << 1) + byte(analogRead(diode_pin) < 650);
     } else {
-      result = (result << 1) + byte(analogRead(diode_pin) < 550);
+      result = (result << 1) + byte(analogRead(diode_pin) < 600);
     }
   }
 
@@ -794,9 +794,9 @@ byte read_led(int diode_pin) {
     delay(5);
     last_light_level = analogRead(diode_pin);
     if (diode_pin == photo_a) {
-      result2 = (result2 << 1) + byte(last_light_level < 550);
+      result2 = (result2 << 1) + byte(last_light_level < 650);
     } else {
-      result2 = (result2 << 1) + byte(last_light_level < 550);
+      result2 = (result2 << 1) + byte(last_light_level < 600);
     }
   }
 
