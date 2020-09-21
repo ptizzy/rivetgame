@@ -182,6 +182,9 @@ void loop() {
         break;
       case TRAINING_COMPLETE:
         break;
+      case COUNTDOWN:
+        countdown();
+        break;
       case GAME:
         game();
         break;
@@ -360,10 +363,9 @@ void on_trigger_a() {
       //      to_training_complete();
       break;
     case TRAINING_COMPLETE:
-      to_game();
+      to_countdown();
       break;
     case COUNTDOWN:
-      countdown();
       break;
     case GAME:
       // Tell arduino about success for sound
