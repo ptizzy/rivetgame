@@ -160,7 +160,7 @@ def game_screen(arduino, screen, time):
 
     text_w_drop(screen, 'Right Player', column_x, column_y - 30, subtext_size + 10, (255, 255, 255), 5)
     text_w_drop(screen,
-                "Attempts/Rivet: %d/%d" % (arduino.get_rivet_attempts(player_num=0), arduino.get_rivets(player_num=1)),
+                "Attempts/Rivet: %d/%d" % (arduino.get_rivet_attempts(player_num=1), arduino.get_rivets(player_num=1)),
                 column_x,
                 column_y + subtext_size * 1, subtext_size - 10, right_player_color, 5)
     accuracy_1 = 0
