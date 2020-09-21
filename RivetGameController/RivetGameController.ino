@@ -448,8 +448,7 @@ void trigger(int player) {
       Serial.println("GYRO correct");
       Serial.println(led_index);
     }
-  }
-  else if (do_print_diagnostics) {
+  } else if (do_print_diagnostics) {
     Serial.println("GYRO incorrect");
   }
 
@@ -663,12 +662,12 @@ void to_high_score()
   b_miss_match = 0;
   a_miss_zero = 0;
   b_miss_zero = 0;
-  a_last_gyro = 0;
-  b_last_gyro = 0;
-  a_last_match_light_level = 0;
-  b_last_match_light_level = 0;
-  a_last_zero_light_level = 0;
-  b_last_zero_light_level = 0;
+  a_last_gyro = -1;
+  b_last_gyro = -1;
+  a_last_match_light_level = -1;
+  b_last_match_light_level = -1;
+  a_last_zero_light_level = -1;
+  b_last_zero_light_level = -1;
 
   // start high score loop
   state_timer = millis();
@@ -768,7 +767,7 @@ byte read_led(int diode_pin) {
 
     FastLED.show();
 
-    //    delay(50);
+    delay(5);
     if(diode_pin == photo_a) {
       result = (result << 1) + byte(analogRead(diode_pin) < 650);
     } else {
@@ -792,7 +791,7 @@ byte read_led(int diode_pin) {
 
     FastLED.show();
 
-    //    delay(50);
+    delay(5);
     last_light_level = analogRead(diode_pin);
     if(diode_pin == photo_a) {
       result2 = (result2 << 1) + byte(last_light_level < 650);
@@ -802,7 +801,7 @@ byte read_led(int diode_pin) {
   }
 
   if (result != result2) {
-    return -2;
+    return -1;
   }
 
   return result;
