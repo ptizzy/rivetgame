@@ -55,7 +55,7 @@ double points_b = 0;
 int combo_b = 0;
 int rivet_attempts_b = 0;
 
-float gyro_thresh_a = 22.0;
+float gyro_thresh_a = 25.0;
 float gyro_thresh_b = 20.0;
 
 // States
@@ -638,10 +638,7 @@ void to_winner()
   state_timer = millis();
   state = WINNER;
   serial_update("S", state);
-}
 
-void to_high_score()
-{
   // write data log
   serial_update("z", a_miss_gyro);
   serial_update("z", b_miss_gyro);
@@ -668,7 +665,10 @@ void to_high_score()
   b_last_match_light_level = -1;
   a_last_zero_light_level = -1;
   b_last_zero_light_level = -1;
+}
 
+void to_high_score()
+{
   // start high score loop
   state_timer = millis();
   state = HIGH_SCORE;
