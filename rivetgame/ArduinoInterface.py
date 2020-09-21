@@ -29,7 +29,7 @@ class BaseArduinoInterface:
                     self.learderboard = pickle.load(f)
             except Exception as e:
                 print("Could not load leaderboard, it will be reset", e)
-                push_text_log(f"Could not load leaderboard, it will be reset {e}")
+                push_text_log("Could not load leaderboard, it will be reset " + e)
 
 
     def add_score_to_leaderboard(self, score):
@@ -43,7 +43,7 @@ class BaseArduinoInterface:
                 pickle.dump(self.learderboard, f)
         except Exception as e:
             print("Could not write leaderboard", e)
-            push_text_log(F"Could not write leaderboard {e}")
+            push_text_log("Could not write leaderboard " + e)
 
 
     def get_leaderboard(self):

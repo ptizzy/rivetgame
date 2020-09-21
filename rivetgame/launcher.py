@@ -104,7 +104,7 @@ def run(controller_port):
             main(arduino)
     except Exception as e:
         print("Exception", e)
-        push_text_log(f"Exception {e}")
+        push_text_log("Exception " + e)
 
 
 if __name__ == '__main__':
