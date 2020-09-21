@@ -429,13 +429,13 @@ void trigger(int player) {
   int led_index = -1;
 
   // Check gyro
-  boolean gyro_correct;
-  if (player == 1) {
-    gyro_correct = is_rivet(z_a, gyro_thresh_a);
-  }
-  else {
-    gyro_correct = is_rivet(z_b, gyro_thresh_b);
-  }
+  boolean gyro_correct = true;
+//  if (player == 1) {
+//    gyro_correct = is_rivet(z_a, gyro_thresh_a);
+//  }
+//  else {
+//    gyro_correct = is_rivet(z_b, gyro_thresh_b);
+//  }
 
   if (gyro_correct) {
     // Fire pattern to get led location
