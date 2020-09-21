@@ -19,6 +19,6 @@ sleep 5
 ##echo "---------------------------------------------"
 #sh upload_arduino.sh &
 #sleep 10
-unzip -o packed.zip
+unzip -n packed.zip
 #pip install --upgrade firebase-admin
 python3 launcher.py
