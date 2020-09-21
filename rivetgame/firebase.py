@@ -13,7 +13,7 @@ def push_data_log(data):
     try:
         if len(data) == 0:
             return
-        ref = db.reference(f'data/{len(data)}')
+        ref = db.reference('data/' + len(data))
         ref.push({i: v for i, v in enumerate(data)})
     except Exception as e:
         print("Failed to firebase" + e)
