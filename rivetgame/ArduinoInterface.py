@@ -17,7 +17,7 @@ class BaseArduinoInterface:
         self.start_time = time.time()
         pygame.mixer.init()
         self.countdown_sound_10s = pygame.mixer.Sound("sounds/countdown.wav")
-        self.countdown_sound_10s = pygame.mixer.Sound("sounds/countdown_3s.wav")
+        self.countdown_sound_3s = pygame.mixer.Sound("sounds/countdown_3s.wav")
         self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
         self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
         self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
