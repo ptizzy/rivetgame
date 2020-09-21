@@ -13,10 +13,10 @@ def push_data_log(data):
     try:
         if len(data) == 0:
             return
-        ref = db.reference('data/' + len(data))
+        ref = db.reference('data/' + str(len(data)))
         ref.push({i: v for i, v in enumerate(data)})
     except Exception as e:
-        print("Failed to firebase" + e)
+        print("Failed to firebase" + str(e))
 
 
 def push_text_log(text):
@@ -24,7 +24,7 @@ def push_text_log(text):
         ref = db.reference('logs')
         ref.push(text)
     except Exception as e:
-        print("Failed to firebase" + e)
+        print("Failed to firebase" + str(e))
 
 
 if __name__ == '__main__':
