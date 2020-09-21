@@ -16,11 +16,11 @@ class BaseArduinoInterface:
         self.learderboard = list(range(10))
         self.start_time = time.time()
         pygame.mixer.init()
-        self.countdown_sound = pygame.mixer.Sound("sounds/countdown.wav")
+        self.countdown_sound_10s = pygame.mixer.Sound("sounds/countdown.wav")
+        self.countdown_sound_10s = pygame.mixer.Sound("sounds/countdown_3s.wav")
         self.player1_sound_correct = pygame.mixer.Sound("sounds/rivet1.wav")
         self.player2_sound_correct = pygame.mixer.Sound("sounds/rivet2.wav")
         self.player_sound_wrong = pygame.mixer.Sound("sounds/error.wav")
-        self.countdown_ready = True
         self.countdown_finished = time.time()
 
         if os.path.exists("leaderboard.pkl"):
@@ -171,7 +171,6 @@ class ArduinoInterface(BaseArduinoInterface):
             raise Exception("Error on arduino restarting")
         if new_msg == "S":
             self.start_time = time.time()
-            self.countdown_ready = True
             # As game finishes save high scores
             if msg_val == 4:
                 # Save data to firebase
@@ -187,9 +186,11 @@ class ArduinoInterface(BaseArduinoInterface):
                 self.add_score_to_leaderboard(self.get_points(player_num=0))
                 self.add_score_to_leaderboard(self.get_points(player_num=1))
 
+            if msg_val == 6:
+                pygame.mixer.Sound.play(self.countdown_sound_3s)
+
         if new_msg == "T" and msg_val == 10:
-            self.countdown_ready = False
-            pygame.mixer.Sound.play(self.countdown_sound)
+            pygame.mixer.Sound.play(self.countdown_sound_10s)
 
         if new_msg == "z":
             self.datalog.append(msg_val)
@@ -223,4 +224,4 @@ class ArduinoInterface(BaseArduinoInterface):
             elif value == 3:
                 pygame.mixer.Sound.play(self.player_sound_wrong)
         if command == "S":
-            pygame.mixer.Sound.stop(self.countdown_sound)
+            pygame.mixer.Sound.stop(self.countdown_sound_10s)

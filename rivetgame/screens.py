@@ -106,6 +106,16 @@ def training_complete_screen(arduino, screen, time):
                 screen.get_width() * 0.5, screen.get_height() * 0.9, 30,
                 (255, 255, 255), 5)
 
+def start_countdown(arduino, screen, time):
+    draw_rivetrace_bkg(arduino, screen, time, "Countdown!")
+
+    # countdown
+    remaining_seconds = arduino.get_remaining_time()
+    text_w_drop(screen, '{}'.format(remaining_seconds), screen.get_width() * 0.5,
+                screen.get_height() * 0.3, 550, (255, 255, 255), 15)
+    text_w_drop(screen, 'Get ready', screen.get_width() * 0.5, screen.get_height() * 0.8, 100, (255, 255, 255), 5)
+
+
 def game_screen(arduino, screen, time):
     draw_rivetrace_bkg(arduino, screen, time, "RIVET RACE!")
 

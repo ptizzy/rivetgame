@@ -64,6 +64,7 @@ float gyro_thresh = 20.0;
 #define GAME       3
 #define WINNER     4
 #define HIGH_SCORE     5
+#define COUNTDOWN   6
 int state = DEMO;
 
 // Counters
@@ -292,6 +293,21 @@ void training()
 }
 
 
+void countdown()
+{
+  // game loop
+  int remaining_seconds = 3 - ((millis() - state_timer) / 1000);
+
+  if (remaining_seconds <= 0) {
+    to_game();
+  }
+
+  if (last_time != remaining_seconds) {
+    serial_update("T", remaining_seconds);
+    last_time = remaining_seconds;
+  }
+}
+
 
 void game()
 {
@@ -346,6 +362,9 @@ void on_trigger_a() {
     case TRAINING_COMPLETE:
       to_game();
       break;
+    case COUNTDOWN:
+      countdown();
+      break;
     case GAME:
       // Tell arduino about success for sound
       serial_update("V", 1);
@@ -383,7 +402,7 @@ void on_trigger_b() {
       //      to_training_complete();
       break;
     case TRAINING_COMPLETE:
-      to_game();
+      to_countdown();
       break;
     case GAME:
       // Tell arduino about success for sound
@@ -570,6 +589,13 @@ void to_training_complete()
   serial_update("S", state);
 }
 
+void to_countdown()
+{
+  state_timer = millis();
+  // start countdown loop
+  state = COUNTDOWN;
+  serial_update("S", state);
+}
 
 void to_game()
 {

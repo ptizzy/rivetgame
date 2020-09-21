@@ -82,6 +82,8 @@ def main(arduino):
             training_screen(arduino, screen, t)
         if mode == 2:
             training_complete_screen(arduino, screen, t)
+        if mode == 6:
+            start_countdown(arduino, screen, t)
         if mode == 3:
             game_screen(arduino, screen, t)
         if mode == 4:
