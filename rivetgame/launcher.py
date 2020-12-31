@@ -123,4 +123,8 @@ if __name__ == '__main__':
         run('/dev/ttyUSB1')
         run('/dev/ttyUSB2')
         run('/dev/ttyUSB3')
+        run('/dev/ttyAMA0')
+        run('/dev/ttyAMA1')
+        run('/dev/ttyAMA2')
+        run('/dev/ttyAMA3')
         time.sleep(5)
