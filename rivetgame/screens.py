@@ -74,7 +74,7 @@ def training_screen(arduino, screen, time):
     screen.blit(gun_image_xform,
                 (column_x - gun_image_xform.get_width() * 0.5, column_y + 220 - gun_image_xform.get_width() * 0.5))
 
-    angle_1 = 360 - arduino.get_angle(player_num=1)
+    angle_1 = 360 - arduino.get_angle(player_num=1) + 180
     gun_image_xform = pygame.transform.scale(gun_image, (200, 200))
     gun_image_xform = pygame.transform.rotate(gun_image_xform, angle_1)
     screen.blit(gun_image_xform, (screen.get_width() - column_x - gun_image_xform.get_width() * 0.5,

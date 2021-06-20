@@ -278,12 +278,12 @@ void training()
       }
     }
 
-    if (is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) < 600) {
+    if (!training_complete_a && is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) < 600) {
       state_timer = millis();
       training_complete_a = true;
     }
 
-    if (is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) < 600) {
+    if (!training_complete_b && is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) < 600) {
       state_timer = millis();
       training_complete_b = true;
     }
