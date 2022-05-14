@@ -13,8 +13,8 @@
 
 #define NUM_LEDS_PER_ROW 18
 #define NUM_LEDS 144
-#define DATA_PIN 10
-#define CLOCK_PIN 11
+#define DATA_PIN 11
+#define CLOCK_PIN 10
 
 CRGB leds[NUM_LEDS];
 int led_states[NUM_LEDS];
