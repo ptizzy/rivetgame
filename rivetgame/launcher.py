@@ -14,7 +14,7 @@ from pygame.locals import *
 from ArduinoInterface import ArduinoInterface
 #from firebase import push_text_log
 from screens import *
-
+from debug import debug
 
 def main(arduino):
     pygame.init()
@@ -49,11 +49,12 @@ def main(arduino):
     size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
     print("Framebuffer size: %d x %d" % (size[0], size[1]))
     flags = FULLSCREEN | DOUBLEBUF
-    screen = pygame.display.set_mode(size, flags, 16)
+
+    screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
     # Clear the screen to start
     screen.fill((255, 255, 255))
     # Initialise font support
-    pygame.font.init()
+    #pygame.font.init()
     # Remove cursor
     pygame.mouse.set_visible(0)
 
@@ -103,7 +104,7 @@ def main(arduino):
 
         # Flip the display
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(30)
 
     # Done! Time to quit.
     pygame.quit()

@@ -43,8 +43,8 @@ def load_images(screen):
     global gun_image
     global left_gun
     global right_gun
-    bkg_image = pygame.image.load("graphics/interface_bkg.png").convert()
-    gun_image = pygame.image.load("graphics/rivet_gun.png").convert_alpha()
+    bkg_image = pygame.image.load("graphics/interface_bkg.bmp").convert()
+    gun_image = pygame.image.load("graphics/rivet_gun.bmp").convert_alpha()
 
     left_gun = Gun(gun_image, screen)
     right_gun = Gun(pygame.transform.flip(gun_image, True, False), screen, True)
@@ -84,15 +84,15 @@ def training_screen(arduino, screen, time):
 
     color_0 = (255, 0, 0)
     score_0 = arduino.get_rivets(player_num=0)
-    if score_0 > 0:
+    if score_0 > 40:
         color_0 = (0, 255, 0)
-    pygame.draw.circle(screen, color_0, (int(column_x), int(column_y + 220)), 100 + score_0)
+    pygame.draw.circle(screen, color_0, (int(column_x), int(column_y + 220)), 50 + score_0)
 
     color_1 = (255, 0, 0)
     score_1 = arduino.get_rivets(player_num=1)
-    if score_1 > 0:
+    if score_1 > 40:
         color_1 = (0, 255, 0)
-    pygame.draw.circle(screen, color_1, (int(screen.get_width() - column_x), int(column_y + 220)), 100 + score_1)
+    pygame.draw.circle(screen, color_1, (int(screen.get_width() - column_x), int(column_y + 220)), 50 + score_1)
 
     text_w_drop(screen, 'Left gun position', column_x, column_y + 330, 30, fwa_white, 5)
     text_w_drop(screen, 'Right gun position', screen.get_width() - column_x, column_y + 330, 30, fwa_white, 5)
