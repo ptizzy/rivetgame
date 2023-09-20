@@ -31,9 +31,11 @@ const int trigger_a = 18;  // trigger button
 const int motor_a = 7; // vibrating motor
 boolean trigger_a_ready = false;
 static unsigned long last_interrupt_time_a = 0;
+boolean motor_a_ready = false;
+static unsigned long motor_time_a = 0;
 //const int motor_a = 5;    // Vibration motor to indicate rivet event
 const int photo_a = A0;   // Photodiode input pin
-const int photo_a_out = 12;   // Photodiode 5v pin
+//const int photo_a_out = 12;   // Photodiode 5v pin
 Adafruit_BNO055 bno_a = Adafruit_BNO055(55, 0x28);
 float x_a, y_a, z_a = 0;
 int rivets_a = 0;
@@ -47,9 +49,11 @@ const int trigger_b = 19;  // trigger button
 const int motor_b = 6;
 boolean trigger_b_ready = false;
 static unsigned long last_interrupt_time_b = 0;
+boolean motor_b_ready = false;
+static unsigned long motor_time_b = 0;
 //const int motor_b = 9;    // Vibration motor to indicate rivet event
 const int photo_b = A5;   // Photodiode input pin
-const int photo_b_out = 8;   // Photodiode 5v pin
+//const int photo_b_out = 8;   // Photodiode 5v pin
 Adafruit_BNO055 bno_b = Adafruit_BNO055(55, 0x29);
 float x_b, y_b, z_b = 0;
 int rivets_b = 0;
@@ -110,10 +114,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(trigger_b), on_trigger_b, CHANGE);
   pinMode(photo_a, INPUT);
   pinMode(photo_b, INPUT);
-  pinMode(photo_a_out, OUTPUT);
-  pinMode(photo_b_out, OUTPUT);
-  digitalWrite(photo_a_out, HIGH);
-  digitalWrite(photo_b_out, HIGH);
+  //pinMode(photo_a_out, OUTPUT);
+  //pinMode(photo_b_out, OUTPUT);
+  //digitalWrite(photo_a_out, HIGH);
+  //digitalWrite(photo_b_out, HIGH);
 
   // initialize serial communications at 115200 bps for status updates
   Serial.begin(115200);
@@ -129,7 +133,6 @@ void setup() {
   }
 
 
-  Serial.println("Boo1");
   if (!bno_b.begin())
   {
     Serial.println("Gun B not connected");
@@ -137,12 +140,9 @@ void setup() {
     delay(1000);
   }
 
-  Serial.println("Boo2");
   /* Use external crystal for better accuracy */
   bno_a.setExtCrystalUse(true);
   bno_b.setExtCrystalUse(true);
-
-  Serial.println("Boo3");
 
   LEDS.addLeds<APA102, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
 
@@ -182,6 +182,22 @@ void loop() {
     if (trigger_b_ready) {
       trigger(2);
       trigger_b_ready = false;
+    }
+
+    if (!motor_a_ready) {
+      unsigned long current_time = millis();
+      if (millis() - motor_time_a > 500) {
+        analogWrite(motor_a, 0);
+        motor_a_ready = true;
+      }
+    }
+
+    if (!motor_b_ready) {
+      unsigned long current_time = millis();
+      if (millis() - motor_time_b > 500) {
+        analogWrite(motor_b, 0);
+        motor_b_ready = true;
+      }
     }
 
     switch (state) {
@@ -261,8 +277,8 @@ void training()
   if (counter % 1000 == 0) {
     serial_update("A", int(z_a + 180.0) % 360);
     serial_update("a", int(z_b + 180.0) % 360);
-    serial_update("R", 650 - analogRead(photo_a));
-    serial_update("r", 650 - analogRead(photo_b));
+    serial_update("R", analogRead(photo_a));
+    serial_update("r", analogRead(photo_b));
 
 
     if (training_complete_a && training_complete_b) {
@@ -288,12 +304,12 @@ void training()
       }
     }
 
-    if (!training_complete_a && is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) < 600) {
+    if (!training_complete_a && is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) > 50) {
       state_timer = millis();
       training_complete_a = true;
     }
 
-    if (!training_complete_b && is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) < 600) {
+    if (!training_complete_b && is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) > 50) {
       state_timer = millis();
       training_complete_b = true;
     }
@@ -368,15 +384,14 @@ void on_trigger_a() {
   
   int trigger_state = digitalRead(trigger_a);
   if (trigger_state == 0) {
-    Serial.println("MOTOR ON");
-    analogWrite(motor_a, 255);
+    if (motor_a_ready) {
+      motor_a_ready = false;
+      motor_time_a = millis();
+      analogWrite(motor_a, 255);  
+    }
   }
-  else {
-    Serial.println("MOTOR OFF");
-    analogWrite(motor_a, 0);
-  }
-  Serial.println(digitalRead(trigger_a));
 
+  serial_update("T", 1);
 
   switch (state) {
     case DEMO:
@@ -418,6 +433,15 @@ void on_trigger_b() {
     return;
   }
   last_interrupt_time_b = interrupt_time;
+
+  int trigger_state = digitalRead(trigger_b);
+  if (trigger_state == 0) {
+    if (motor_b_ready) {
+      motor_b_ready = false;
+      motor_time_b = millis();
+      analogWrite(motor_b, 255);  
+    }
+  }
 
   serial_update("T", 2);
 
@@ -793,9 +817,9 @@ byte read_led(int diode_pin) {
 
     delay(5);
     if (diode_pin == photo_a) {
-      result = (result << 1) + byte(analogRead(diode_pin) < 650);
+      result = (result << 1) + byte(analogRead(diode_pin) > 50);
     } else {
-      result = (result << 1) + byte(analogRead(diode_pin) < 600);
+      result = (result << 1) + byte(analogRead(diode_pin) > 50);
     }
   }
 
@@ -818,9 +842,9 @@ byte read_led(int diode_pin) {
     delay(5);
     last_light_level = analogRead(diode_pin);
     if (diode_pin == photo_a) {
-      result2 = (result2 << 1) + byte(last_light_level < 650);
+      result2 = (result2 << 1) + byte(last_light_level > 50);
     } else {
-      result2 = (result2 << 1) + byte(last_light_level < 600);
+      result2 = (result2 << 1) + byte(last_light_level > 50);
     }
   }
 
