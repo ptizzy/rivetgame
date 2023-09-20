@@ -28,6 +28,7 @@ const int play_btn = 3;  // Start playing
 // Player A Inputs
 //const int trigger_a = A11;  // trigger button
 const int trigger_a = 18;  // trigger button
+const int motor_a = 7; // vibrating motor
 boolean trigger_a_ready = false;
 static unsigned long last_interrupt_time_a = 0;
 //const int motor_a = 5;    // Vibration motor to indicate rivet event
@@ -43,6 +44,7 @@ int rivet_attempts_a = 0;
 // Player B Inputs
 //const int trigger_b = A10;  // trigger button
 const int trigger_b = 19;  // trigger button
+const int motor_b = 6;
 boolean trigger_b_ready = false;
 static unsigned long last_interrupt_time_b = 0;
 //const int motor_b = 9;    // Vibration motor to indicate rivet event
@@ -116,23 +118,31 @@ void setup() {
   // initialize serial communications at 115200 bps for status updates
   Serial.begin(115200);
   delay(1000);
+  Serial.println("SERIAL INIT");
 
   /* Initialise the sensor */
-  while (!bno_a.begin())
+  if (!bno_a.begin())
   {
+    Serial.println("Gun A not connected");
     serial_update("E", 0); // Error #0 - Gun A not connected
     delay(1000);
   }
 
 
-  while (!bno_b.begin())
+  Serial.println("Boo1");
+  if (!bno_b.begin())
   {
+    Serial.println("Gun B not connected");
     serial_update("E", 1); // Error #1 - Gun B not connected
     delay(1000);
   }
+
+  Serial.println("Boo2");
   /* Use external crystal for better accuracy */
   bno_a.setExtCrystalUse(true);
   bno_b.setExtCrystalUse(true);
+
+  Serial.println("Boo3");
 
   LEDS.addLeds<APA102, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
 
@@ -355,6 +365,18 @@ void on_trigger_a() {
     return;
   }
   last_interrupt_time_a = interrupt_time;
+  
+  int trigger_state = digitalRead(trigger_a);
+  if (trigger_state == 0) {
+    Serial.println("MOTOR ON");
+    analogWrite(motor_a, 255);
+  }
+  else {
+    Serial.println("MOTOR OFF");
+    analogWrite(motor_a, 0);
+  }
+  Serial.println(digitalRead(trigger_a));
+
 
   switch (state) {
     case DEMO:
@@ -396,6 +418,8 @@ void on_trigger_b() {
     return;
   }
   last_interrupt_time_b = interrupt_time;
+
+  serial_update("T", 2);
 
   switch (state) {
     case DEMO:
@@ -832,14 +856,7 @@ void write_led_states() {
 
 */
 
-void serial_update(char* key, double val) {
-  // Standard update message to communicate with RasPi
-  // {key: value} pair defines updates of specific variables
-  Serial.print(key);
-  Serial.println(val);
-}
-
-void serial_update(char* key, int val) {
+void serial_update(char *key, double val) {
   // Standard update message to communicate with RasPi
   // {key: value} pair defines updates of specific variables
   Serial.print(key);

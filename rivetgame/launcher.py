@@ -8,10 +8,11 @@ Tools for interfacing with Arduinos using Python
 import os
 import time
 
+import pygame
+clock = pygame.time.Clock()
 from pygame.locals import *
-
 from ArduinoInterface import ArduinoInterface
-from firebase import push_text_log
+#from firebase import push_text_log
 from screens import *
 
 
@@ -37,7 +38,7 @@ def main(arduino):
             pygame.display.init()
         except pygame.error:
             print('Driver: {0} failed.'.format(driver))
-            push_text_log('Driver: {0} failed.'.format(driver))
+            # push_text_log('Driver: {0} failed.'.format(driver))
             continue
         found = True
         break
@@ -47,7 +48,8 @@ def main(arduino):
 
     size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
     print("Framebuffer size: %d x %d" % (size[0], size[1]))
-    screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+    flags = FULLSCREEN | DOUBLEBUF
+    screen = pygame.display.set_mode(size, flags, 16)
     # Clear the screen to start
     screen.fill((255, 255, 255))
     # Initialise font support
@@ -55,11 +57,15 @@ def main(arduino):
     # Remove cursor
     pygame.mouse.set_visible(0)
 
+    # Load images
+    load_images(screen)
+
     # Render the screen
     pygame.display.update()
 
     # Run until the user asks to quit
     running = True
+    current_mode = -1
     while running:
         # Did the user press escape? If so, exit to the console
         for event in pygame.event.get():
@@ -77,6 +83,10 @@ def main(arduino):
         t = time.time() - arduino.get_start_time()
 
         if mode == 0:
+            if mode != current_mode:
+                current_mode = mode
+                draw_rivetrace_bkg(arduino, screen, time, "Learn How")
+                text_w_drop(screen, 'Pick up a rivet gun to play', screen.get_width() * 0.5, 240, 60, (255, 255, 255), 5, 100)
             demo_screen(arduino, screen, t)
         if mode == 1:
             training_screen(arduino, screen, t)
@@ -92,7 +102,8 @@ def main(arduino):
             leaderboard(arduino, screen, t)
 
         # Flip the display
-        pygame.display.flip()
+        pygame.display.update()
+        clock.tick(60)
 
     # Done! Time to quit.
     pygame.quit()
@@ -108,7 +119,7 @@ def run(controller_port):
         print("Exception", e)
         if "could not open port" in str(e):
             return
-        push_text_log("Exception " + str(e))
+        # push_text_log("Exception " + str(e))
 
 
 if __name__ == '__main__':

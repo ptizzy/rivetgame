@@ -6,7 +6,7 @@ import pygame
 import serial
 import pickle
 
-from firebase import push_data_log, push_text_log
+# from firebase import push_data_log, push_text_log
 
 
 class BaseArduinoInterface:
@@ -29,7 +29,7 @@ class BaseArduinoInterface:
                     self.learderboard = pickle.load(f)
             except Exception as e:
                 print("Could not load leaderboard, it will be reset", e)
-                push_text_log("Could not load leaderboard, it will be reset " + str(e))
+                # push_text_log("Could not load leaderboard, it will be reset " + str(e))
 
 
     def add_score_to_leaderboard(self, score):
@@ -43,7 +43,7 @@ class BaseArduinoInterface:
                 pickle.dump(self.learderboard, f)
         except Exception as e:
             print("Could not write leaderboard", e)
-            push_text_log("Could not write leaderboard " + str(e))
+            # push_text_log("Could not write leaderboard " + str(e))
 
 
     def get_leaderboard(self):

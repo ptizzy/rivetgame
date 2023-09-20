@@ -5,21 +5,66 @@ import random
 from resource.fwa_named_colors import *
 
 font_map = {}
-bkg_image = pygame.image.load("graphics/interface_bkg.png")
-gun_image = pygame.image.load("graphics/rivet_gun.png")
+
+bkg_image = None
+gun_image = None
+left_gun = None
+right_gun = None
+
+
+class Gun:
+    def __init__(self, image, screen, flip=False):
+        self.image = image
+        self.rotated_image = image
+        self.screen = screen
+        self.flip = flip
+        self.width = image.get_width()
+        self.height = image.get_height()
+        self.rotated_width = image.get_width()
+        self.rotated_height = image.get_height()
+        self.screen_width = screen.get_width()
+        self.screen_height = screen.get_height()
+        self.originPos = image.get_rect().move(0, self.height)
+        self.pos = self.originPos
+
+    def move(self, time):
+        osc = math.sin(time)
+
+        self.rotated_image = pygame.transform.rotate(self.image, -(osc * 50 + 45) if self.flip else (osc * 50 + 45))
+        self.rotated_width = self.rotated_image.get_width()
+        self.rotated_height = self.rotated_image.get_height()
+        self.pos.update(self.screen_width * (0.75 if self.flip else 0.3) - self.rotated_width/2,
+            self.screen_height * 0.65 - self.rotated_height/2,
+            self.rotated_width,
+            self.rotated_height)
+
+def load_images(screen):
+    global bkg_image
+    global gun_image
+    global left_gun
+    global right_gun
+    bkg_image = pygame.image.load("graphics/interface_bkg.png").convert()
+    gun_image = pygame.image.load("graphics/rivet_gun.png").convert_alpha()
+
+    left_gun = Gun(gun_image, screen)
+    right_gun = Gun(pygame.transform.flip(gun_image, True, False), screen, True)
 
 def demo_screen(arduino, screen, time):
-    draw_rivetrace_bkg(arduino, screen, time, "Learn How")
 
-    text_w_drop(screen, 'Pick up a rivet gun to play', screen.get_width() * 0.5, 240, 60, (255, 255, 255), 5, 100)
+    screen.blit(bkg_image, left_gun.pos, left_gun.pos)
+    screen.blit(bkg_image, right_gun.pos, right_gun.pos)
+    left_gun.move(time)
+    right_gun.move(time)
+    screen.blit(left_gun.rotated_image, left_gun.pos)
+    screen.blit(right_gun.rotated_image, right_gun.pos)
 
-    gun_image_rotated = pygame.transform.rotate(gun_image, math.sin(time) * 50 + 45)
-    screen.blit(gun_image_rotated, (
-        screen.get_width() * 0.3 - gun_image_rotated.get_width() * 0.5 + math.sin(time) * 100 - 40,
-        screen.get_height() * 0.75 - gun_image_rotated.get_height() * 0.5 + math.sin(time) * 200))
-    screen.blit(pygame.transform.flip(gun_image_rotated, 1, 0), (
-        screen.get_width() * 0.7 - gun_image_rotated.get_width() * 0.5 - math.sin(time) * 100,
-        screen.get_height() * 0.75 - gun_image_rotated.get_height() * 0.5 + math.sin(time) * 200))
+    # gun_image_rotated = pygame.transform.rotate(gun_image, math.sin(time) * 50 + 45)
+    # screen.blit(gun_image_rotated, (
+    #     screen.get_width() * 0.3 - gun_image_rotated.get_width() * 0.5 + math.sin(time) * 100 - 40,
+    #     screen.get_height() * 0.75 - gun_image_rotated.get_height() * 0.5 + math.sin(time) * 200))
+    # screen.blit(pygame.transform.flip(gun_image_rotated, 1, 0), (
+    #     screen.get_width() * 0.7 - gun_image_rotated.get_width() * 0.5 - math.sin(time) * 100,
+    #     screen.get_height() * 0.75 - gun_image_rotated.get_height() * 0.5 + math.sin(time) * 200))
 
 
 def training_screen(arduino, screen, time):
