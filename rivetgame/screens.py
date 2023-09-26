@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+from PIL import Image
 
 from resource.fwa_named_colors import *
 
@@ -10,53 +11,60 @@ bkg_image = None
 gun_image = None
 left_gun = None
 right_gun = None
+gun_tile_size = (800,800)
 
 
 class Gun:
     def __init__(self, image, screen, flip=False):
         self.image = image
-        self.rotated_image = image
         self.screen = screen
         self.flip = flip
-        self.width = image.get_width()
-        self.height = image.get_height()
-        self.rotated_width = image.get_width()
-        self.rotated_height = image.get_height()
+        self.width = gun_tile_size[0]
+        self.height = gun_tile_size[1]
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
-        self.originPos = image.get_rect().move(0, self.height)
-        self.pos = self.originPos
+        self.pos = pygame.Rect((1000,300), gun_tile_size) if flip else pygame.Rect((75,300), gun_tile_size)
+        self.tile_pos = pygame.Rect(0, gun_tile_size[0], 0, gun_tile_size[1])
 
     def move(self, time):
         osc = math.sin(time)
+        index = math.floor(osc * 50 + 45 + 5)
+        top = index%10 * gun_tile_size[1]
+        left = math.floor(index/10) * gun_tile_size[0]
+        self.tile_pos.update((top, left), gun_tile_size)
+        
+        
 
-        self.rotated_image = pygame.transform.rotate(self.image, -(osc * 50 + 45) if self.flip else (osc * 50 + 45))
-        self.rotated_width = self.rotated_image.get_width()
-        self.rotated_height = self.rotated_image.get_height()
-        self.pos.update(self.screen_width * (0.75 if self.flip else 0.3) - self.rotated_width/2,
-            self.screen_height * 0.65 - self.rotated_height/2,
-            self.rotated_width,
-            self.rotated_height)
+        #self.pos.update(self.screen_width * (0.75 if self.flip else 0.3) - self.rotated_width/2,
+        #    self.screen_height * 0.65 - self.rotated_height/2,
+        #    self.rotated_width,
+        #    self.rotated_height)
 
 def load_images(screen):
     global bkg_image
     global gun_image
+    global gun_image_flipped
     global left_gun
     global right_gun
     bkg_image = pygame.image.load("graphics/interface_bkg.png").convert()
-    gun_image = pygame.image.load("graphics/rivet_gun.png").convert_alpha()
+    # with Image.open("graphics/rivet_gun_sprite.png") as im:
+    #     gun_image = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert_alpha()
+    # with Image.open("graphics/rivet_gun_flipped_sprite.png") as im:
+    #     gun_image_flipped = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert_alpha()
+    gun_image = pygame.image.load("graphics/rivet_gun_sprite.png").convert_alpha()
+    gun_image_flipped = pygame.image.load("graphics/rivet_gun_flipped_sprite.png").convert_alpha()
 
     left_gun = Gun(gun_image, screen)
-    right_gun = Gun(pygame.transform.flip(gun_image, True, False), screen, True)
+    right_gun = Gun(gun_image_flipped, screen, True)
 
 def demo_screen(arduino, screen, time):
-
     screen.blit(bkg_image, left_gun.pos, left_gun.pos)
     screen.blit(bkg_image, right_gun.pos, right_gun.pos)
     left_gun.move(time)
     right_gun.move(time)
-    screen.blit(left_gun.rotated_image, left_gun.pos)
-    screen.blit(right_gun.rotated_image, right_gun.pos)
+    screen.blit(left_gun.image, left_gun.pos, left_gun.tile_pos)
+    screen.blit(right_gun.image, right_gun.pos, right_gun.tile_pos)
+
 
     # gun_image_rotated = pygame.transform.rotate(gun_image, math.sin(time) * 50 + 45)
     # screen.blit(gun_image_rotated, (
@@ -230,21 +238,23 @@ def game_screen(arduino, screen, time):
 
 
 def game_complete_screen(arduino, screen, time):
-    draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
+#    draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
 
     column_x = screen.get_width() * 0.2
     column_y = screen.get_height() * 0.35
     subtext_size = 50
 
+    screen.blit(bkg_image, (0, column_y-80), pygame.Rect(0, column_y-80, screen.get_width(), 620))
+
     pygame.draw.rect(screen, fwa_2nd_teal_dk, (0 - ease(time) * 800, column_y - 50, screen.get_width() * 0.35, 480), 5)
     pygame.draw.rect(screen, fwa_medium_blue, (0 - ease(time) * 800, column_y - 50, screen.get_width() * 0.35, 480))
 
     text_w_drop(screen, 'Left Player', column_x + ease(time) * 200, column_y - ease(time) * 60,
-                60 + int(ease(time) * 40), (255, 255, 255), 5)
+                (60 + int(ease(time) * 40)), (255, 255, 255), 5)
     text_w_drop(screen, 'Score:', column_x + ease(time) * 200, column_y + 100, 60 + int(ease(time) * 40),
                 left_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=0)), column_x + ease(time) * 200, column_y + 290,
-                140 + int(ease(time) * 180), left_player_color, 10)
+                (140 + int(ease(time) * 180)), left_player_color, 10)
 
     # right player score display
 
@@ -256,7 +266,7 @@ def game_complete_screen(arduino, screen, time):
                      (screen.get_width() * 0.65 + ease(time) * 800, column_y - 50, screen.get_width() * 0.35, 480))
 
     text_w_drop(screen, 'Right Player', column_x - ease(time) * 200, column_y - ease(time) * 60,
-                60 + int(ease(time) * 40), (255, 255, 255), 5)
+                (60 + int(ease(time) * 40)), (255, 255, 255), 5)
     text_w_drop(screen, 'Score:', column_x - ease(time) * 200, column_y + 100, 60 + int(ease(time) * 40),
                 right_player_color, 5)
     text_w_drop(screen, str(arduino.get_points(player_num=1)), column_x - ease(time) * 200, column_y + 290,

@@ -168,7 +168,8 @@ class ArduinoInterface(BaseArduinoInterface):
 
     def apply_msg(self, new_msg, msg_val, target_msg):
         if new_msg == "E":
-            raise Exception("Error on arduino restarting")
+#            raise Exception("Error on arduino restarting")
+            pass
         if new_msg == "S":
             self.start_time = time.time()
             # As game finishes save high scores

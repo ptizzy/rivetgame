@@ -82,12 +82,16 @@ def main(arduino):
 
         t = time.time() - arduino.get_start_time()
 
+        update_rects = []
+
         if mode == 0:
             if mode != current_mode:
                 current_mode = mode
                 draw_rivetrace_bkg(arduino, screen, time, "Learn How")
                 text_w_drop(screen, 'Pick up a rivet gun to play', screen.get_width() * 0.5, 240, 60, (255, 255, 255), 5, 100)
             demo_screen(arduino, screen, t)
+            #update_rects.append(left_gun.pos)
+            #update_rects.append(right_gun.pos)
         if mode == 1:
             training_screen(arduino, screen, t)
         if mode == 2:
@@ -97,13 +101,23 @@ def main(arduino):
         if mode == 3:
             game_screen(arduino, screen, t)
         if mode == 4:
-            game_complete_screen(arduino, screen, t)
+            if mode != current_mode:
+                current_mode = mode
+                draw_rivetrace_bkg(arduino, screen, time, "Congratulations!")
+            game_complete_screen(arduino, screen, t-5)
         if mode == 5:
             leaderboard(arduino, screen, t)
 
         # Flip the display
-        pygame.display.update()
-        clock.tick(60)
+        if len(update_rects) > 0:
+            pygame.display.update(update_rects)
+        else:
+            pygame.display.update()
+            
+        if mode == 4:
+            clock.tick(30)
+        else:
+            clock.tick(60)
 
     # Done! Time to quit.
     pygame.quit()
@@ -130,6 +144,9 @@ if __name__ == '__main__':
         run('COM4')
         run('COM5')
         run('COM6')
+        run('COM7')
+        run('COM8')
+        run('COM9')
         run('/dev/ttyUSB0')
         run('/dev/ttyUSB1')
         run('/dev/ttyUSB2')
