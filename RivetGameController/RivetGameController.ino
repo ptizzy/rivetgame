@@ -304,12 +304,12 @@ void training()
       }
     }
 
-    if (!training_complete_a && is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) > 50) {
+    if (!training_complete_a && is_rivet(z_a, gyro_thresh_a) && analogRead(photo_a) > 45) {
       state_timer = millis();
       training_complete_a = true;
     }
 
-    if (!training_complete_b && is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) > 50) {
+    if (!training_complete_b && is_rivet(z_b, gyro_thresh_b) && analogRead(photo_b) > 45) {
       state_timer = millis();
       training_complete_b = true;
     }
@@ -391,8 +391,6 @@ void on_trigger_a() {
     }
   }
 
-  serial_update("T", 1);
-
   switch (state) {
     case DEMO:
       //      to_training();
@@ -442,8 +440,6 @@ void on_trigger_b() {
       analogWrite(motor_b, 255);  
     }
   }
-
-  serial_update("T", 2);
 
   switch (state) {
     case DEMO:
@@ -817,9 +813,9 @@ byte read_led(int diode_pin) {
 
     delay(5);
     if (diode_pin == photo_a) {
-      result = (result << 1) + byte(analogRead(diode_pin) > 50);
+      result = (result << 1) + byte(analogRead(diode_pin) > 45);
     } else {
-      result = (result << 1) + byte(analogRead(diode_pin) > 50);
+      result = (result << 1) + byte(analogRead(diode_pin) > 45);
     }
   }
 
@@ -842,9 +838,9 @@ byte read_led(int diode_pin) {
     delay(5);
     last_light_level = analogRead(diode_pin);
     if (diode_pin == photo_a) {
-      result2 = (result2 << 1) + byte(last_light_level > 50);
+      result2 = (result2 << 1) + byte(last_light_level > 45);
     } else {
-      result2 = (result2 << 1) + byte(last_light_level > 50);
+      result2 = (result2 << 1) + byte(last_light_level > 45);
     }
   }
 
@@ -881,6 +877,13 @@ void write_led_states() {
 */
 
 void serial_update(char *key, double val) {
+  // Standard update message to communicate with RasPi
+  // {key: value} pair defines updates of specific variables
+  Serial.print(key);
+  Serial.println(val);
+}
+
+void serial_debug(char *key, int val) {
   // Standard update message to communicate with RasPi
   // {key: value} pair defines updates of specific variables
   Serial.print(key);

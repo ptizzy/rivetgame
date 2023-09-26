@@ -181,7 +181,7 @@ class ArduinoInterface(BaseArduinoInterface):
                 self.datalog.append(self.get_rivets(player_num=1))
                 self.datalog.append(self.get_combo(player_num=0))
                 self.datalog.append(self.get_combo(player_num=1))
-                push_data_log(self.datalog)
+                #push_data_log(self.datalog)
                 self.datalog = []
 
                 self.add_score_to_leaderboard(self.get_points(player_num=0))
@@ -219,10 +219,13 @@ class ArduinoInterface(BaseArduinoInterface):
         # Successful
         if command == "V":
             if value == 1:
-                pygame.mixer.Sound.play(self.player1_sound_correct)
+                #pygame.mixer.Sound.play(self.player1_sound_correct)
+                pass
             elif value == 2:
-                pygame.mixer.Sound.play(self.player2_sound_correct)
+                #pygame.mixer.Sound.play(self.player2_sound_correct)
+                pass
             elif value == 3:
-                pygame.mixer.Sound.play(self.player_sound_wrong)
+                #pygame.mixer.Sound.play(self.player_sound_wrong)
+                pass
         if command == "S":
             pygame.mixer.Sound.stop(self.countdown_sound_10s)
