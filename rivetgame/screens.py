@@ -12,6 +12,7 @@ gun_image = None
 left_gun = None
 right_gun = None
 gun_tile_size = (800,800)
+logo_small_pos = pygame.Rect((1639,874), (228,160))
 
 
 class Gun:
@@ -29,6 +30,7 @@ class Gun:
     def move(self, time):
         osc = math.sin(time)
         index = math.floor(osc * 50 + 45 + 5)
+        #index = math.floor((osc * 50 + 45 + 5) / 2)
         top = index%10 * gun_tile_size[1]
         left = math.floor(index/10) * gun_tile_size[0]
         self.tile_pos.update((top, left), gun_tile_size)
@@ -42,39 +44,31 @@ class Gun:
 
 def load_images(screen):
     global bkg_image
+    global logo_small
     global gun_image
     global gun_image_flipped
     global left_gun
     global right_gun
 
     bkg_image = pygame.image.load("graphics/interface_bkg.png").convert()
-    # with Image.open("graphics/rivet_gun_sprite.png") as im:
-    #     gun_image = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert_alpha()
-    # with Image.open("graphics/rivet_gun_flipped_sprite.png") as im:
-    #     gun_image_flipped = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert_alpha()
-    gun_image = pygame.image.load("graphics/rivet_gun_sprite.png").convert_alpha()
-    gun_image_flipped = pygame.image.load("graphics/rivet_gun_flipped_sprite.png").convert_alpha()
+    with Image.open("graphics/fw_logo-small.png") as im:
+        logo_small = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert_alpha()
+    with Image.open("graphics/rivet_gun_sprite-with_bg.png") as im:
+        gun_image = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert()
+    with Image.open("graphics/rivet_gun_flipped_sprite-with_bg.png") as im:
+        gun_image_flipped = pygame.image.fromstring(im.tobytes(), im.size, im.mode).convert()
+    # gun_image = pygame.image.load("graphics/rivet_gun_sprite-with_bg.png").convert_alpha()
+    # gun_image_flipped = pygame.image.load("graphics/rivet_gun_flipped_sprite-with_bg.png").convert_alpha()
 
     left_gun = Gun(gun_image, screen)
     right_gun = Gun(gun_image_flipped, screen, True)
 
 def demo_screen(arduino, screen, time):
-    screen.blit(bkg_image, left_gun.pos, left_gun.pos)
-    screen.blit(bkg_image, right_gun.pos, right_gun.pos)
     left_gun.move(time)
     right_gun.move(time)
     screen.blit(left_gun.image, left_gun.pos, left_gun.tile_pos)
     screen.blit(right_gun.image, right_gun.pos, right_gun.tile_pos)
-
-
-    # gun_image_rotated = pygame.transform.rotate(gun_image, math.sin(time) * 50 + 45)
-    # screen.blit(gun_image_rotated, (
-    #     screen.get_width() * 0.3 - gun_image_rotated.get_width() * 0.5 + math.sin(time) * 100 - 40,
-    #     screen.get_height() * 0.75 - gun_image_rotated.get_height() * 0.5 + math.sin(time) * 200))
-    # screen.blit(pygame.transform.flip(gun_image_rotated, 1, 0), (
-    #     screen.get_width() * 0.7 - gun_image_rotated.get_width() * 0.5 - math.sin(time) * 100,
-    #     screen.get_height() * 0.75 - gun_image_rotated.get_height() * 0.5 + math.sin(time) * 200))
-
+    screen.blit(logo_small, logo_small_pos)
 
 def training_screen(arduino, screen, time):
     draw_rivetrace_bkg(arduino, screen, time, "Instructions")

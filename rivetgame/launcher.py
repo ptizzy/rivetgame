@@ -64,6 +64,7 @@ def main(arduino):
     # Render the screen
     pygame.display.update()
 
+    start_time = time.time()
     # Run until the user asks to quit
     running = True
     current_mode = -1
@@ -75,9 +76,9 @@ def main(arduino):
                     running = False
 
         # Check for updated messages from the Arduino
-        res = None
-        while res is None or len(res) != 0:
-            res = arduino.read_serial()
+        # res = None
+        # while res is None or len(res) != 0:
+        #     res = arduino.read_serial()
 
         mode = arduino.get_state()
 
@@ -91,8 +92,6 @@ def main(arduino):
                 draw_rivetrace_bkg(arduino, screen, time, "Learn How")
                 text_w_drop(screen, 'Pick up a rivet gun to play', screen.get_width() * 0.5, 240, 60, (255, 255, 255), 5, 100)
             demo_screen(arduino, screen, t)
-            #update_rects.append(left_gun.pos)
-            #update_rects.append(right_gun.pos)
         if mode == 1:
             training_screen(arduino, screen, t)
         if mode == 2:
@@ -115,8 +114,8 @@ def main(arduino):
         else:
             pygame.display.update()
             
-        if mode == 4:
-            clock.tick(30)
+        if mode == 4 or mode == 0:
+            clock.tick(24)
         else:
             clock.tick(60)
 
